@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:inner_time/screens/moon_screen.dart';
 import 'package:inner_time/screens/sun_screen.dart';
 
@@ -43,11 +44,37 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
   late final ValueNotifier<DateTime> _globalMomentNotifier;
+  double? _latitude;
+  double? _longitude;
 
   @override
   void initState() {
     super.initState();
     _globalMomentNotifier = ValueNotifier<DateTime>(DateTime.now());
+    _initLocation();
+  }
+
+  Future<void> _initLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return;
+      }
+      
+      if (permission == LocationPermission.deniedForever) return;
+
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
+    } catch (e) {
+      // Ignore location errors gracefully
+    }
   }
 
   @override
@@ -69,10 +96,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   void _handleHorizontalDragUpdate(DragUpdateDetails details) {
-    // Sensitivity: 10 pixels roughly equals 1 day
     if (details.primaryDelta != null) {
-      // Swiping right (positive delta) -> go back in time
-      // Swiping left (negative delta) -> go forward in time
       final double deltaDays = -details.primaryDelta! / 10.0;
       final int deltaMs = (deltaDays * 24 * 60 * 60 * 1000).round();
       final newTime = _globalMomentNotifier.value.add(Duration(milliseconds: deltaMs));
@@ -86,7 +110,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       valueListenable: _globalMomentNotifier,
       builder: (context, globalDate, _) {
         final List<Widget> screens = [
-          MoonScreen(date: globalDate),
+          MoonScreen(date: globalDate, latitude: _latitude, longitude: _longitude),
           SunScreen(date: globalDate),
         ];
 

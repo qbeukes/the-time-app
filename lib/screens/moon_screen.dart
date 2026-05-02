@@ -7,8 +7,10 @@ import '../widgets/stylized_moon.dart';
 
 class MoonScreen extends StatelessWidget {
   final DateTime date;
+  final double? latitude;
+  final double? longitude;
 
-  const MoonScreen({super.key, required this.date});
+  const MoonScreen({super.key, required this.date, this.latitude, this.longitude});
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +18,15 @@ class MoonScreen extends StatelessWidget {
     final illumination = SunCalc.getMoonIllumination(date);
     final currentPhase = illumination['phase']?.toDouble() ?? 0.0;
     final fraction = illumination['fraction']?.toDouble() ?? 0.0;
+    final angle = illumination['angle']?.toDouble() ?? 0.0;
+
+    double tilt = 0.0;
+    if (latitude != null && longitude != null) {
+      final position = SunCalc.getMoonPosition(date, latitude!, longitude!);
+      final parallacticAngle = position['parallacticAngle']?.toDouble() ?? 0.0;
+      // The true visual rotation of the moon depends on both the angle of illumination and parallactic angle
+      tilt = parallacticAngle - angle;
+    }
 
     return Center(
       child: Column(
@@ -24,6 +35,7 @@ class MoonScreen extends StatelessWidget {
           StylizedMoon(
             phase: currentPhase,
             size: 180,
+            tilt: tilt,
           ),
           
           const SizedBox(height: 10),
@@ -40,6 +52,14 @@ class MoonScreen extends StatelessWidget {
             'Date: ${date.toLocal().toString().split(' ')[0]}',
             style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
+          if (latitude != null && longitude != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                'Location: ${latitude!.toStringAsFixed(2)}, ${longitude!.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 12, color: Colors.white38),
+              ),
+            ),
 
           const SizedBox(height: 30),
           const Text(

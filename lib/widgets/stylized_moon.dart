@@ -5,8 +5,9 @@ import 'dart:ui' as ui;
 class StylizedMoon extends StatelessWidget {
   final double phase; // 0.0 to 1.0
   final double size;
+  final double tilt; // Rotation in radians based on location
 
-  const StylizedMoon({super.key, required this.phase, this.size = 200});
+  const StylizedMoon({super.key, required this.phase, this.size = 200, this.tilt = 0.0});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +30,12 @@ class StylizedMoon extends StatelessWidget {
           ),
         ],
       ),
-      child: CustomPaint(
-        size: Size(size, size),
-        painter: _MoonPhasePainter(phase: phase),
+      child: Transform.rotate(
+        angle: tilt,
+        child: CustomPaint(
+          size: Size(size, size),
+          painter: _MoonPhasePainter(phase: phase),
+        ),
       ),
     );
   }
