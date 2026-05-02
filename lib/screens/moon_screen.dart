@@ -5,7 +5,7 @@ import 'package:inner_time/models/lunar/lunar_moment.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
 import '../widgets/stylized_moon.dart';
 
-class MoonScreen extends StatelessWidget {
+class MoonScreen extends StatefulWidget {
   final DateTime date;
   final double? latitude;
   final double? longitude;
@@ -13,18 +13,24 @@ class MoonScreen extends StatelessWidget {
   const MoonScreen({super.key, required this.date, this.latitude, this.longitude});
 
   @override
+  State<MoonScreen> createState() => _MoonScreenState();
+}
+
+class _MoonScreenState extends State<MoonScreen> {
+  bool _useLocalTilt = true;
+
+  @override
   Widget build(BuildContext context) {
-    final moment = LunarMoment(date.millisecondsSinceEpoch);
-    final illumination = SunCalc.getMoonIllumination(date);
+    final moment = LunarMoment(widget.date.millisecondsSinceEpoch);
+    final illumination = SunCalc.getMoonIllumination(widget.date);
     final currentPhase = illumination['phase']?.toDouble() ?? 0.0;
     final fraction = illumination['fraction']?.toDouble() ?? 0.0;
     final angle = illumination['angle']?.toDouble() ?? 0.0;
 
     double tilt = 0.0;
-    if (latitude != null && longitude != null) {
-      final position = SunCalc.getMoonPosition(date, latitude!, longitude!);
+    if (_useLocalTilt && widget.latitude != null && widget.longitude != null) {
+      final position = SunCalc.getMoonPosition(widget.date, widget.latitude!, widget.longitude!);
       final parallacticAngle = position['parallacticAngle']?.toDouble() ?? 0.0;
-      // The true visual rotation of the moon depends on both the angle of illumination and parallactic angle
       tilt = parallacticAngle - angle;
     }
 
@@ -49,15 +55,31 @@ class MoonScreen extends StatelessWidget {
 
           const SizedBox(height: 20),
           Text(
-            'Date: ${date.toLocal().toString().split(' ')[0]}',
+            'Date: ${widget.date.toLocal().toString().split(' ')[0]}',
             style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
-          if (latitude != null && longitude != null)
+          
+          if (widget.latitude != null && widget.longitude != null)
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Location: ${latitude!.toStringAsFixed(2)}, ${longitude!.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 12, color: Colors.white38),
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Location: ${widget.latitude!.toStringAsFixed(2)}, ${widget.longitude!.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 12, color: Colors.white38),
+                  ),
+                  const SizedBox(width: 8),
+                  Switch(
+                    value: _useLocalTilt,
+                    onChanged: (val) {
+                      setState(() {
+                        _useLocalTilt = val;
+                      });
+                    },
+                  ),
+                  const Text('Local Tilt', style: TextStyle(fontSize: 12, color: Colors.white38)),
+                ],
               ),
             ),
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 class StylizedMoon extends StatelessWidget {
   final double phase; // 0.0 to 1.0
@@ -16,72 +15,79 @@ class StylizedMoon extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
+        color: const Color(0xFF0F172A), // Base deep space color
         // The Bloom / Glow Effect
         boxShadow: [
           BoxShadow(
-            color: Colors.blueAccent.withOpacity(0.1),
+            color: Colors.blueAccent.withOpacity(0.15),
             blurRadius: 40,
-            spreadRadius: 10,
+            spreadRadius: 5,
           ),
           BoxShadow(
             color: Colors.white.withOpacity(0.05),
             blurRadius: 20,
-            spreadRadius: 5,
+            spreadRadius: 2,
           ),
         ],
       ),
+      clipBehavior: Clip.antiAlias, // Ensure square images are clipped to a perfect circle
       child: Transform.rotate(
         angle: tilt,
-        child: CustomPaint(
-          size: Size(size, size),
-          painter: _MoonPhasePainter(phase: phase),
+        child: Stack(
+          children: [
+            // 1. Earthshine (Dark side of the moon texture)
+            // We tint the image to look like the unilluminated dark side
+            ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Color(0xFF1E293B), // Dark slate blue
+                BlendMode.multiply,
+              ),
+              child: Opacity(
+                opacity: 0.6,
+                child: Image.asset(
+                  'assets/images/moon.png',
+                  width: size,
+                  height: size,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback if image fails to load
+                    return Container(color: const Color(0xFF1E293B));
+                  },
+                ),
+              ),
+            ),
+            
+            // 2. The Lit side (Bright moon texture)
+            // Clipped mathematically to the exact crescent/gibbous shape
+            ClipPath(
+              clipper: _MoonPhaseClipper(phase: phase),
+              child: Image.asset(
+                'assets/images/moon.png',
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(color: const Color(0xFFF8FAFC));
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _MoonPhasePainter extends CustomPainter {
+class _MoonPhaseClipper extends CustomClipper<Path> {
   final double phase; // 0.0 to 1.0
 
-  _MoonPhasePainter({required this.phase});
+  _MoonPhaseClipper({required this.phase});
 
   @override
-  void paint(Canvas canvas, Size size) {
+  Path getClip(Size size) {
     final r = size.width / 2;
     final center = Offset(r, r);
-
-    // 1. Draw base dark moon (Earthshine) with a subtle 3D sphere gradient
-    final darkPaint = Paint()
-      ..shader = ui.Gradient.radial(
-        center,
-        r,
-        [const Color(0xFF2F3E46), const Color(0xFF1A1F24)],
-        [0.0, 1.0],
-      )
-      ..style = PaintingStyle.fill;
-    
-    canvas.drawCircle(center, r, darkPaint);
-
-    // Get the illuminated path
-    Path litPath = _getLitPath(r, phase);
-
-    // 2. Draw lit hemisphere with a bright 3D sphere gradient
-    final lightPaint = Paint()
-      ..shader = ui.Gradient.radial(
-        Offset(r * 0.7, r * 0.7), // Offset the highlight for 3D effect
-        r * 1.5,
-        [const Color(0xFFFFFFFF), const Color(0xFFD0D5DB)],
-        [0.0, 1.0],
-      )
-      ..style = PaintingStyle.fill;
-
-    canvas.drawPath(litPath, lightPaint);
-  }
-
-  Path _getLitPath(double r, double phase) {
     Path path = Path();
-    final center = Offset(r, r);
 
     if (phase == 0.0 || phase == 1.0) return path;
     if (phase == 0.5) {
@@ -129,7 +135,7 @@ class _MoonPhasePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _MoonPhasePainter oldDelegate) {
-    return oldDelegate.phase != phase;
+  bool shouldReclip(covariant _MoonPhaseClipper oldClipper) {
+    return oldClipper.phase != phase;
   }
 }
