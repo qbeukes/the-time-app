@@ -54,6 +54,15 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTK REQUIRED IMPORTED_TARGET gtk+-3.0)
 
+# Workaround for broken system package configurations containing non-existent glycin-2 paths
+if(TARGET PkgConfig::GTK)
+  get_target_property(GTK_INCLUDES PkgConfig::GTK INTERFACE_INCLUDE_DIRECTORIES)
+  if(GTK_INCLUDES)
+    list(REMOVE_ITEM GTK_INCLUDES "/usr/include/glycin-2")
+    set_target_properties(PkgConfig::GTK PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${GTK_INCLUDES}")
+  endif()
+endif()
+
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 

@@ -5,6 +5,6 @@ class FullMoonBasedLayer extends LunarTimeLayer {
 
   @override
   DateTime getLunarEpoch() {
-    return DateTime.utc(2026, 4, 3);
+    return DateTime.utc(2017, 7, 9, 4, 7, 0);
   }
 }
