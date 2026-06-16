@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:inner_time/models/lunar/full_moon_based_layer.dart';
 import 'package:inner_time/models/lunar/new_moon_based_layer.dart';
 import 'package:inner_time/models/lunar/luach/luach_layer.dart';
-import 'package:inner_time/models/lunar/luach/luach_metadata.dart';
 import 'package:inner_time/models/lunar/lunar_moment.dart';
 import 'package:inner_time/models/tra/tra_layer.dart';
 import 'package:inner_time/models/tra/tra_archetype.dart';
-import 'package:inner_time/models/tra/tra_phase.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
 import '../widgets/stylized_moon.dart';
-import '../widgets/seconds_timer.dart';
+
 
 class MoonScreen extends StatelessWidget {
   final DateTime date;
@@ -19,7 +17,6 @@ class MoonScreen extends StatelessWidget {
   // Toggle flags — controlled by the burger menu in main.dart
   final bool showTra;
   final bool showLuach;
-  final bool showSeconds;
   final bool useLocalTilt;
 
   const MoonScreen({
@@ -29,7 +26,6 @@ class MoonScreen extends StatelessWidget {
     this.longitude,
     this.showTra = true,
     this.showLuach = true,
-    this.showSeconds = false,
     this.useLocalTilt = true,
   });
 
@@ -84,12 +80,6 @@ class MoonScreen extends StatelessWidget {
               // ── Luach Card ────────────────────────────────────────────
               if (showLuach) ...[
                 _buildLuachCard(context, luachLayer),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Seconds / Meditation Timer ────────────────────────────
-              if (showSeconds) ...[
-                const SecondsTimer(),
                 const SizedBox(height: 16),
               ],
 

@@ -2,17 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/moment.dart';
 import '../models/solar/gregorian_solar_time.dart';
 import '../models/solar/enochian_solar_time.dart';
-import '../widgets/seconds_timer.dart';
 
 class SunScreen extends StatelessWidget {
   final DateTime date;
-  final bool showSeconds;
 
-  const SunScreen({
-    super.key,
-    required this.date,
-    this.showSeconds = false,
-  });
+  const SunScreen({super.key, required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +20,7 @@ class SunScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.wb_sunny,
-                size: 100,
-                color: Colors.amber,
-              ),
+              const Icon(Icons.wb_sunny, size: 100, color: Colors.amber),
               const SizedBox(height: 20),
               Text(
                 'Date: ${date.toLocal().toString().split(' ')[0]}',
@@ -46,13 +36,6 @@ class SunScreen extends StatelessWidget {
                 'Enochian: ${moment.toDisplayValue(EnochianSolarTime.new)}',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-
-              // ── Seconds / Meditation Timer ──────────────────────────
-              if (showSeconds) ...[
-                const SizedBox(height: 24),
-                const SecondsTimer(),
-                const SizedBox(height: 16),
-              ],
             ],
           ),
         ),
