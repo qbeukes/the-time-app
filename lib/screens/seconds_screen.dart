@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../models/timer_profile.dart';
 
 class SecondsScreen extends StatefulWidget {
@@ -27,6 +28,15 @@ class _SecondsScreenState extends State<SecondsScreen>
   bool _isPaused = false;
   Timer? _tickTimer;
   final Set<int> _firedBells = {};
+
+  // Bell cycling: bell1 → bell2 → bell3 → bell1 → …
+  int _bellCount = 0;
+  static const List<String> _bellAssets = [
+    'sounds/bell1.wav',
+    'sounds/bell2.wav',
+    'sounds/bell3.wav',
+  ];
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   late AnimationController _pulseCtrl;
   late AnimationController _breathCtrl;
@@ -79,6 +89,7 @@ class _SecondsScreenState extends State<SecondsScreen>
   @override
   void dispose() {
     _tickTimer?.cancel();
+    _audioPlayer.dispose();
     _pulseCtrl.dispose();
     _breathCtrl.dispose();
     _bellFlashCtrl.dispose();
@@ -92,7 +103,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     if (!_isPaused &&
         _profile.bellAtSeconds.contains(0) &&
         !_firedBells.contains(0)) {
-      _ringBell();
+      _ringBell(); // fire-and-forget
       _firedBells.add(0);
     }
 
@@ -108,7 +119,7 @@ class _SecondsScreenState extends State<SecondsScreen>
 
       if (_profile.bellAtSeconds.contains(_elapsedSeconds) &&
           !_firedBells.contains(_elapsedSeconds)) {
-        _ringBell();
+        _ringBell(); // fire-and-forget
         _firedBells.add(_elapsedSeconds);
       }
 
@@ -138,13 +149,24 @@ class _SecondsScreenState extends State<SecondsScreen>
       _isRunning = false;
       _isPaused = false;
       _firedBells.clear();
+      _bellCount = 0;
     });
   }
 
-  void _ringBell() {
+  Future<void> _ringBell() async {
     HapticFeedback.mediumImpact();
     _bellFlashCtrl.forward(from: 0.0).then((_) => _bellFlashCtrl.reverse());
-    // TODO: play bell audio (add audioplayers package for a gentle bell .mp3)
+
+    // Cycle through bell1 → bell2 → bell3 → bell1 → …
+    final asset = _bellAssets[_bellCount % _bellAssets.length];
+    _bellCount++;
+
+    try {
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource(asset));
+    } catch (_) {
+      // Gracefully ignore audio errors (e.g. unsupported platform)
+    }
   }
 
   void _onComplete() {
