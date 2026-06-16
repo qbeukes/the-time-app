@@ -46,8 +46,8 @@ class TimerProfile {
         TimerProfile(
           id: 'default_breath',
           name: 'Breath Cycles',
-          durationSeconds: 540,
-          bellAtSeconds: [0, 180, 360, 540],
+          durationSeconds: 900,
+          bellAtSeconds: [0, 300, 600, 900],
         ),
         TimerProfile(
           id: 'default_deep',
