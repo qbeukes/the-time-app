@@ -17,6 +17,7 @@ class MoonScreen extends StatelessWidget {
   // Toggle flags — controlled by the burger menu in main.dart
   final bool showTra;
   final bool showLuach;
+  final bool showMoonBase;
   final bool useLocalTilt;
 
   const MoonScreen({
@@ -26,6 +27,7 @@ class MoonScreen extends StatelessWidget {
     this.longitude,
     this.showTra = true,
     this.showLuach = true,
+    this.showMoonBase = true,
     this.useLocalTilt = true,
   });
 
@@ -83,43 +85,203 @@ class MoonScreen extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
-              const SizedBox(height: 8),
-              const Text(
-                'Full Moon Base',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.amber,
-                ),
-              ),
+              // ── Moon Base Card ─────────────────────────────────────
+              if (showMoonBase) ...[
+                _buildMoonBaseCard(context, moment),
+                const SizedBox(height: 16),
+              ],
 
               const SizedBox(height: 8),
-              Text(
-                moment.toDisplayValue(FullMoonBasedLayer.new),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 24),
-              const Text(
-                'New Moon Base',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.blueAccent,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-              Text(
-                moment.toDisplayValue(NewMoonBasedLayer.new),
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoonBaseCard(BuildContext context, LunarMoment moment) {
+    const amberColor = Color(0xFFFFC107);
+    const blueColor = Color(0xFF42A5F5);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0x22FFC107), // amber tint
+            Color(0x0E42A5F5), // blue tint
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0x55FFC107),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x26FFC107),
+            blurRadius: 24,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [amberColor, blueColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x66FFC107),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('🌕', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'MOON CYCLE BASES',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: amberColor,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Lunar Anchors',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // Full Moon Base row
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: amberColor.withOpacity(0.12),
+                    border: Border.all(
+                        color: amberColor.withOpacity(0.4), width: 1.5),
+                  ),
+                  child: const Center(
+                    child: Text('○', style: TextStyle(fontSize: 16, color: amberColor)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'FULL MOON BASE',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: amberColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        moment.toDisplayValue(FullMoonBasedLayer.new),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 14),
+
+            // New Moon Base row
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: blueColor.withOpacity(0.12),
+                    border: Border.all(
+                        color: blueColor.withOpacity(0.4), width: 1.5),
+                  ),
+                  child: const Center(
+                    child: Text('●', style: TextStyle(fontSize: 14, color: blueColor)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'NEW MOON BASE',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: blueColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        moment.toDisplayValue(NewMoonBasedLayer.new),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

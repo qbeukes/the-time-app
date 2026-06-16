@@ -52,6 +52,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // ── Moon toggles ──────────────────────────────────────────────
   bool _moonShowTra = true;
   bool _moonShowLuach = true;
+  bool _moonShowMoonBase = false;
   bool _moonUseLocalTilt = true;
 
   // ── Seconds / profiles ────────────────────────────────────────
@@ -139,12 +140,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       builder: (_) => _MoonMenuSheet(
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
+        showMoonBase: _moonShowMoonBase,
         useLocalTilt: _moonUseLocalTilt,
         hasLocation: _latitude != null && _longitude != null,
-        onChanged: (tra, luach, tilt) {
+        onChanged: (tra, luach, moonBase, tilt) {
           setState(() {
             _moonShowTra = tra;
             _moonShowLuach = luach;
+            _moonShowMoonBase = moonBase;
             _moonUseLocalTilt = tilt;
           });
         },
@@ -199,6 +202,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             longitude: _longitude,
             showTra: _moonShowTra,
             showLuach: _moonShowLuach,
+            showMoonBase: _moonShowMoonBase,
             useLocalTilt: _moonUseLocalTilt,
           ),
           SunScreen(date: globalDate),
@@ -269,13 +273,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 class _MoonMenuSheet extends StatefulWidget {
   final bool showTra;
   final bool showLuach;
+  final bool showMoonBase;
   final bool useLocalTilt;
   final bool hasLocation;
-  final void Function(bool tra, bool luach, bool tilt) onChanged;
+  final void Function(bool tra, bool luach, bool moonBase, bool tilt) onChanged;
 
   const _MoonMenuSheet({
     required this.showTra,
     required this.showLuach,
+    required this.showMoonBase,
     required this.useLocalTilt,
     required this.hasLocation,
     required this.onChanged,
@@ -288,6 +294,7 @@ class _MoonMenuSheet extends StatefulWidget {
 class _MoonMenuSheetState extends State<_MoonMenuSheet> {
   late bool _tra;
   late bool _luach;
+  late bool _moonBase;
   late bool _tilt;
 
   @override
@@ -295,10 +302,11 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
     super.initState();
     _tra = widget.showTra;
     _luach = widget.showLuach;
+    _moonBase = widget.showMoonBase;
     _tilt = widget.useLocalTilt;
   }
 
-  void _emit() => widget.onChanged(_tra, _luach, _tilt);
+  void _emit() => widget.onChanged(_tra, _luach, _moonBase, _tilt);
 
   @override
   Widget build(BuildContext context) {
@@ -337,6 +345,14 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
                 value: _tilt,
                 onChanged: (v) { setState(() => _tilt = v); _emit(); },
               ),
+            _ToggleRow(
+              label: 'Lunar Anchors',
+              subtitle: 'Full & New moon cycle bases',
+              icon: '🌕',
+              iconColor: const Color(0xFFFFC107),
+              value: _moonBase,
+              onChanged: (v) { setState(() => _moonBase = v); _emit(); },
+            ),
           ],
         ),
       ),
