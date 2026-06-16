@@ -9,43 +9,41 @@ import 'package:inner_time/models/tra/tra_archetype.dart';
 import 'package:inner_time/models/tra/tra_phase.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
 import '../widgets/stylized_moon.dart';
+import '../widgets/seconds_timer.dart';
 
-class MoonScreen extends StatefulWidget {
+class MoonScreen extends StatelessWidget {
   final DateTime date;
   final double? latitude;
   final double? longitude;
+
+  // Toggle flags — controlled by the burger menu in main.dart
+  final bool showTra;
+  final bool showLuach;
+  final bool showSeconds;
+  final bool useLocalTilt;
 
   const MoonScreen({
     super.key,
     required this.date,
     this.latitude,
     this.longitude,
+    this.showTra = true,
+    this.showLuach = true,
+    this.showSeconds = false,
+    this.useLocalTilt = true,
   });
 
   @override
-  State<MoonScreen> createState() => _MoonScreenState();
-}
-
-class _MoonScreenState extends State<MoonScreen> {
-  bool _useLocalTilt = true;
-  bool _showTraLayer = true;
-  bool _showLuachLayer = true;
-
-  @override
   Widget build(BuildContext context) {
-    final moment = LunarMoment(widget.date.millisecondsSinceEpoch);
-    final illumination = SunCalc.getMoonIllumination(widget.date);
+    final moment = LunarMoment(date.millisecondsSinceEpoch);
+    final illumination = SunCalc.getMoonIllumination(date);
     final currentPhase = illumination['phase']?.toDouble() ?? 0.0;
     final fraction = illumination['fraction']?.toDouble() ?? 0.0;
     final angle = illumination['angle']?.toDouble() ?? 0.0;
 
     double tilt = 0.0;
-    if (_useLocalTilt && widget.latitude != null && widget.longitude != null) {
-      final position = SunCalc.getMoonPosition(
-        widget.date,
-        widget.latitude!,
-        widget.longitude!,
-      );
+    if (useLocalTilt && latitude != null && longitude != null) {
+      final position = SunCalc.getMoonPosition(date, latitude!, longitude!);
       final parallacticAngle = position['parallacticAngle']?.toDouble() ?? 0.0;
       tilt = parallacticAngle - angle;
     }
@@ -71,92 +69,31 @@ class _MoonScreenState extends State<MoonScreen> {
 
               const SizedBox(height: 12),
               Text(
-                'Date: ${widget.date.toLocal().toString().split('.')[0]}',
+                'Date: ${date.toLocal().toString().split('.')[0]}',
                 style: const TextStyle(fontSize: 16, color: Colors.white70),
               ),
 
-              // Configuration & Toggles Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 12,
-                  runSpacing: 8,
-                  children: [
-                    if (widget.latitude != null && widget.longitude != null) ...[
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Switch(
-                            value: _useLocalTilt,
-                            activeColor: Colors.amber,
-                            onChanged: (val) {
-                              setState(() {
-                                _useLocalTilt = val;
-                              });
-                            },
-                          ),
-                          const Text(
-                            'Local Tilt',
-                            style: TextStyle(fontSize: 12, color: Colors.white54),
-                          ),
-                        ],
-                      ),
-                    ],
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: _showTraLayer,
-                          activeColor: Colors.deepPurpleAccent,
-                          onChanged: (val) {
-                            setState(() {
-                              _showTraLayer = val;
-                            });
-                          },
-                        ),
-                        const Text(
-                          '12TRA Layer',
-                          style: TextStyle(fontSize: 12, color: Colors.white54),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: _showLuachLayer,
-                          activeColor: Colors.tealAccent,
-                          onChanged: (val) {
-                            setState(() {
-                              _showLuachLayer = val;
-                            });
-                          },
-                        ),
-                        const Text(
-                          'Luach Layer',
-                          style: TextStyle(fontSize: 12, color: Colors.white54),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 8),
 
-              // 12TRA Resonance Card (Beautiful Gradient Panel)
-              if (_showTraLayer) ...[
+              // ── 12TRA Card ────────────────────────────────────────────
+              if (showTra) ...[
                 _buildTraCard(traLayer),
                 const SizedBox(height: 16),
               ],
 
-              // Luach Card (Resembling 12TRA Card style)
-              if (_showLuachLayer) ...[
+              // ── Luach Card ────────────────────────────────────────────
+              if (showLuach) ...[
                 _buildLuachCard(context, luachLayer),
                 const SizedBox(height: 16),
               ],
 
-              const SizedBox(height: 16),
+              // ── Seconds / Meditation Timer ────────────────────────────
+              if (showSeconds) ...[
+                const SecondsTimer(),
+                const SizedBox(height: 16),
+              ],
+
+              const SizedBox(height: 8),
               const Text(
                 'Full Moon Base',
                 style: TextStyle(
@@ -189,6 +126,8 @@ class _MoonScreenState extends State<MoonScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
+
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -389,7 +328,9 @@ class _MoonScreenState extends State<MoonScreen> {
                         children: [
                           const TextSpan(
                             text: 'Daily Active Mode: ',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white54),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white54),
                           ),
                           TextSpan(
                             text: '${daily.name} — ',
@@ -519,7 +460,8 @@ class _MoonScreenState extends State<MoonScreen> {
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(12),
@@ -552,7 +494,8 @@ class _MoonScreenState extends State<MoonScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(12),
@@ -589,11 +532,13 @@ class _MoonScreenState extends State<MoonScreen> {
             // Gemstone Badge
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: archetype.color.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: archetype.color.withOpacity(0.2)),
+                border: Border.all(
+                    color: archetype.color.withOpacity(0.2)),
               ),
               child: Row(
                 children: [
@@ -604,11 +549,14 @@ class _MoonScreenState extends State<MoonScreen> {
                   const SizedBox(width: 8),
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 13, color: Colors.white70),
+                      style: const TextStyle(
+                          fontSize: 13, color: Colors.white70),
                       children: [
                         const TextSpan(
                           text: 'Gemstone: ',
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white54),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white54),
                         ),
                         TextSpan(
                           text: meta.gemstone,
@@ -659,7 +607,8 @@ class _MoonScreenState extends State<MoonScreen> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.white10,
                     borderRadius: BorderRadius.circular(4),
