@@ -29,6 +29,22 @@ class TimerProfile {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'durationSeconds': durationSeconds,
+        'bellAtSeconds': bellAtSeconds,
+      };
+
+  factory TimerProfile.fromJson(Map<String, dynamic> json) {
+    return TimerProfile(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      durationSeconds: json['durationSeconds'] as int,
+      bellAtSeconds: List<int>.from(json['bellAtSeconds'] as List? ?? []),
+    );
+  }
+
   String get durationLabel {
     final m = durationSeconds ~/ 60;
     final s = durationSeconds % 60;

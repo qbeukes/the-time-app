@@ -1,6 +1,6 @@
 {
-    "name": "inner_time",
-    "short_name": "inner_time",
+    "name": "The Time App",
+    "short_name": "The Time App",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:inner_time/screens/moon_screen.dart';
@@ -9,7 +12,7 @@ import 'package:inner_time/models/timer_profile.dart';
 void main() {
   runApp(
     DevicePreview(
-      enabled: true,
+      enabled: !kReleaseMode,
       builder: (context) => const InnerTimeApp(),
     ),
   );
@@ -65,13 +68,47 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _globalMomentNotifier = ValueNotifier<DateTime>(DateTime.now());
     _profiles = TimerProfile.defaults;
     _initLocation();
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        if (prefs.containsKey('moonShowTra')) _moonShowTra = prefs.getBool('moonShowTra')!;
+        if (prefs.containsKey('moonShowLuach')) _moonShowLuach = prefs.getBool('moonShowLuach')!;
+        if (prefs.containsKey('moonShowMoonBase')) _moonShowMoonBase = prefs.getBool('moonShowMoonBase')!;
+        if (prefs.containsKey('moonUseLocalTilt')) _moonUseLocalTilt = prefs.getBool('moonUseLocalTilt')!;
+        if (prefs.containsKey('activeProfileIndex')) _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
+        
+        final profilesJson = prefs.getStringList('profiles');
+        if (profilesJson != null) {
+          _profiles = profilesJson.map((s) => TimerProfile.fromJson(jsonDecode(s))).toList();
+          if (_activeProfileIndex >= _profiles.length) _activeProfileIndex = 0;
+        }
+      });
+    } catch (e) {
+      debugPrint('Error loading prefs: $e');
+    }
+  }
+
+  Future<void> _savePrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('moonShowTra', _moonShowTra);
+      await prefs.setBool('moonShowLuach', _moonShowLuach);
+      await prefs.setBool('moonShowMoonBase', _moonShowMoonBase);
+      await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
+      await prefs.setInt('activeProfileIndex', _activeProfileIndex);
+      final profilesJson = _profiles.map((p) => jsonEncode(p.toJson())).toList();
+      await prefs.setStringList('profiles', profilesJson);
+    } catch (e) {
+      debugPrint('Error saving prefs: $e');
+    }
   }
 
   Future<void> _initLocation() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -79,6 +116,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       }
 
       if (permission == LocationPermission.deniedForever) return;
+
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
 
       Position position = await Geolocator.getCurrentPosition();
       setState(() {
@@ -150,6 +190,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _moonShowMoonBase = moonBase;
             _moonUseLocalTilt = tilt;
           });
+          _savePrefs();
         },
       ),
     );
@@ -167,14 +208,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         activeIndex: _activeProfileIndex,
         onSelectProfile: (i) {
           setState(() => _activeProfileIndex = i);
+          _savePrefs();
         },
         onAddProfile: (p) {
           setState(() => _profiles = [..._profiles, p]);
+          _savePrefs();
         },
         onUpdateProfile: (i, p) {
           setState(() {
             _profiles = List.from(_profiles)..[i] = p;
           });
+          _savePrefs();
         },
         onDeleteProfile: (i) {
           setState(() {
@@ -183,6 +227,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               _activeProfileIndex = _profiles.length - 1;
             }
           });
+          _savePrefs();
         },
       ),
     );
@@ -209,7 +254,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           SecondsScreen(
             profiles: _profiles,
             activeProfileIndex: _activeProfileIndex,
-            onProfileChanged: (i) => setState(() => _activeProfileIndex = i),
+            onProfileChanged: (i) {
+              setState(() => _activeProfileIndex = i);
+              _savePrefs();
+            },
           ),
         ];
 
