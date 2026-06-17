@@ -1,17 +1,47 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/moment.dart';
 import '../models/solar/gregorian_solar_time.dart';
 import '../models/solar/enochian_solar_time.dart';
-import '../widgets/realistic_sun_painter.dart';
 
-class SunScreen extends StatelessWidget {
+class SunScreen extends StatefulWidget {
   final DateTime date;
 
   const SunScreen({super.key, required this.date});
 
   @override
+  State<SunScreen> createState() => _SunScreenState();
+}
+
+class _SunScreenState extends State<SunScreen> {
+  late Timer _clockTimer;
+  DateTime _now = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _clockTimer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final moment = Moment(date.millisecondsSinceEpoch);
+    // Use the live clock for the Gregorian card
+    final gregorian = GregorianSolarTime(
+      Moment(_now.millisecondsSinceEpoch),
+    );
+
+    // Use the navigable date for the Enochian card (date-only, no time element)
+    final enochian = EnochianSolarTime(
+      Moment(widget.date.millisecondsSinceEpoch),
+    );
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -27,24 +57,604 @@ class SunScreen extends StatelessWidget {
                 height: 320,
                 fit: BoxFit.contain,
               ),
-              // RealisticSun(size: 300, animate: true),
               const SizedBox(height: 20),
-              Text(
-                'Date: ${date.toLocal().toString().split(' ')[0]}',
-                style: const TextStyle(fontSize: 16, color: Colors.white70),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Gregorian: ${moment.toDisplayValue(GregorianSolarTime.new)}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Enochian: ${moment.toDisplayValue(EnochianSolarTime.new)}',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+
+              // ── Gregorian Card ──────────────────────────────────
+              _buildGregorianCard(gregorian),
+              const SizedBox(height: 16),
+
+              // ── Enochian Card ───────────────────────────────────
+              _buildEnochianCard(enochian),
+              const SizedBox(height: 16),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Gregorian Solar Calendar Card
+  // ═══════════════════════════════════════════════════════════════
+
+  Widget _buildGregorianCard(GregorianSolarTime greg) {
+    const accentColor = Color(0xFFFFA726); // warm amber
+    const secondaryColor = Color(0xFFFFD54F); // lighter gold
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0x22FFA726),
+            Color(0x0EFFD54F),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0x55FFA726),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x26FFA726),
+            blurRadius: 24,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x66FFA726),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('☀️', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'GREGORIAN SOLAR CALENDAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: accentColor.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        greg.formattedDate,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // Live clock display
+            Center(
+              child: Text(
+                greg.formattedTime,
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: 4,
+                  color: Colors.white,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Day of year progress
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'DAY ${greg.dayOfYear} OF ${greg.daysInYear}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  '${(greg.dayOfYear / greg.daysInYear * 100).toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Year progress bar — 12 segments, one per month
+            Row(
+              children: List.generate(12, (index) {
+                final m = index + 1; // month 1–12
+                final daysInMonth = DateUtils.getDaysInMonth(greg.year, m);
+                final isPast = m < greg.month;
+                final isCurrent = m == greg.month;
+                double segmentVal = 0.0;
+
+                if (isPast) {
+                  segmentVal = 1.0;
+                } else if (isCurrent) {
+                  segmentVal = greg.day / daysInMonth;
+                }
+
+                return Expanded(
+                  flex: daysInMonth, // proportional to days in month
+                  child: Container(
+                    height: 6,
+                    margin: EdgeInsets.only(
+                      left: index == 0 ? 0.0 : 1.5,
+                      right: index == 11 ? 0.0 : 1.5,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: Colors.white10,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: segmentVal,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [accentColor, secondaryColor],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Enochian Solar Calendar Card
+  // ═══════════════════════════════════════════════════════════════
+
+  Widget _buildEnochianCard(EnochianSolarTime enoch) {
+    if (enoch.isOutOfTime) {
+      return _buildOutOfTimeCard(enoch);
+    }
+    return _buildNormalEnochianCard(enoch);
+  }
+
+  Widget _buildNormalEnochianCard(EnochianSolarTime enoch) {
+    const accentColor = Color(0xFF7C4DFF); // deep indigo-violet
+    const secondaryColor = Color(0xFFB388FF); // lighter lavender
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0x227C4DFF),
+            Color(0x0EB388FF),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0x557C4DFF),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x267C4DFF),
+            blurRadius: 24,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x667C4DFF),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('✦',
+                        style: TextStyle(fontSize: 22, color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ENOCHIAN SOLAR CALENDAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: accentColor.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Month ${enoch.enochianMonth}, Day ${enoch.enochianDay}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // Month progress
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'MONTH ${enoch.enochianMonth} OF 13',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  'DAY ${enoch.enochianDay} OF 28',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Month progress bar
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                color: Colors.white10,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: enoch.monthProgress,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Year progress
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ENOCHIAN DAY ${enoch.enochianDayOfYear} OF 364',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  '${(enoch.yearProgress * 100).toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: secondaryColor.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Segmented year progress bar (13 segments for 13 months)
+            Row(
+              children: List.generate(13, (index) {
+                final isCurrent = index == enoch.enochianMonth - 1;
+                final isPast = index < enoch.enochianMonth - 1;
+                double segmentVal = 0.0;
+
+                if (isPast) {
+                  segmentVal = 1.0;
+                } else if (isCurrent) {
+                  segmentVal = enoch.monthProgress;
+                }
+
+                return Expanded(
+                  child: Container(
+                    height: 6,
+                    margin: EdgeInsets.only(
+                      left: index == 0 ? 0.0 : 2.0,
+                      right: index == 12 ? 0.0 : 2.0,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(3),
+                      color: Colors.white10,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: segmentVal,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [accentColor, secondaryColor],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── "Day out of Time" variant ────────────────────────────────
+
+  Widget _buildOutOfTimeCard(EnochianSolarTime enoch) {
+    const accentColor = Color(0xFFFFD740); // golden amber
+    const secondaryColor = Color(0xFFFF6D00); // deep orange
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0x22FFD740),
+            Color(0x0EFF6D00),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0x55FFD740),
+          width: 1.5,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x33FFD740),
+            blurRadius: 24,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x66FFD740),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('◇',
+                        style: TextStyle(fontSize: 24, color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'ENOCHIAN SOLAR CALENDAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: accentColor.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Text(
+                        'Day out of Time',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // Day out of time info
+            Container(
+              width: double.infinity,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: accentColor.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+                border:
+                    Border.all(color: accentColor.withOpacity(0.2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (enoch.totalOutOfTimeDays > 1) ...[
+                    Text(
+                      'Day ${enoch.outOfTimeDayNumber} of ${enoch.totalOutOfTimeDays}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                  const Text(
+                    'This day falls outside the 364-day Enochian grid. '
+                    'The calendar pauses to realign with the solar year before '
+                    'a new cycle begins.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Year complete indicator — full bar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'ENOCHIAN YEAR COMPLETE',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  '364 / 364',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Full progress bar
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                color: Colors.white10,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: 1.0,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
