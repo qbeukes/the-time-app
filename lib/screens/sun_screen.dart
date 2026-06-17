@@ -8,12 +8,14 @@ class SunScreen extends StatefulWidget {
   final DateTime date;
   final bool showGregorian;
   final bool showEnochian;
+  final bool showLocalTime;
 
   const SunScreen({
     super.key,
     required this.date,
     this.showGregorian = true,
     this.showEnochian = true,
+    this.showLocalTime = true,
   });
 
   @override
@@ -41,9 +43,7 @@ class _SunScreenState extends State<SunScreen> {
   @override
   Widget build(BuildContext context) {
     // Use the live clock for the Gregorian card
-    final gregorian = GregorianSolarTime(
-      Moment(_now.millisecondsSinceEpoch),
-    );
+    final gregorian = GregorianSolarTime(Moment(_now.millisecondsSinceEpoch));
 
     // Use the navigable date for the Enochian card (date-only, no time element)
     final enochian = EnochianSolarTime(
@@ -66,6 +66,12 @@ class _SunScreenState extends State<SunScreen> {
               ),
               const SizedBox(height: 20),
 
+              // ── localTime Card ───────────────────────
+              if (widget.showLocalTime) ...[
+                _buildLocalTimeCard(gregorian),
+                const SizedBox(height: 16),
+              ],
+
               // ── Gregorian Card ──────────────────────────────────
               if (widget.showGregorian) ...[
                 _buildGregorianCard(gregorian),
@@ -85,6 +91,104 @@ class _SunScreenState extends State<SunScreen> {
   }
 
   // ═══════════════════════════════════════════════════════════════
+  // localTime Card (Daily Clock)
+  // ═══════════════════════════════════════════════════════════════
+
+  Widget _buildLocalTimeCard(GregorianSolarTime greg) {
+    const accentColor = Color(0xFF00E5FF); // neon cyan
+    const secondaryColor = Color(0xFF2979FF); // electric blue
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0x2200E5FF), Color(0x0E2979FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: const Color(0x5500E5FF), width: 1.5),
+        boxShadow: const [
+          BoxShadow(color: Color(0x2600E5FF), blurRadius: 24, spreadRadius: -4),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x6600E5FF),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('⏰', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'LOCAL TIME',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: accentColor.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      const Text(
+                        'Local Time',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 24, color: Colors.white24),
+            Center(
+              child: Text(
+                greg.formattedTime,
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w300,
+                  letterSpacing: 4,
+                  color: Colors.white,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   // Gregorian Solar Calendar Card
   // ═══════════════════════════════════════════════════════════════
 
@@ -97,23 +201,13 @@ class _SunScreenState extends State<SunScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [
-            Color(0x22FFA726),
-            Color(0x0EFFD54F),
-          ],
+          colors: [Color(0x22FFA726), Color(0x0EFFD54F)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: const Color(0x55FFA726),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0x55FFA726), width: 1.5),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x26FFA726),
-            blurRadius: 24,
-            spreadRadius: -4,
-          ),
+          BoxShadow(color: Color(0x26FFA726), blurRadius: 24, spreadRadius: -4),
         ],
       ),
       child: Padding(
@@ -176,22 +270,6 @@ class _SunScreenState extends State<SunScreen> {
             ),
 
             const Divider(height: 24, color: Colors.white24),
-
-            // Live clock display
-            Center(
-              child: Text(
-                greg.formattedTime,
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w300,
-                  letterSpacing: 4,
-                  color: Colors.white,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
 
             // Day of year progress
             Row(
@@ -287,23 +365,13 @@ class _SunScreenState extends State<SunScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [
-            Color(0x227C4DFF),
-            Color(0x0EB388FF),
-          ],
+          colors: [Color(0x227C4DFF), Color(0x0EB388FF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: const Color(0x557C4DFF),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0x557C4DFF), width: 1.5),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x267C4DFF),
-            blurRadius: 24,
-            spreadRadius: -4,
-          ),
+          BoxShadow(color: Color(0x267C4DFF), blurRadius: 24, spreadRadius: -4),
         ],
       ),
       child: Padding(
@@ -333,8 +401,10 @@ class _SunScreenState extends State<SunScreen> {
                     ],
                   ),
                   child: const Center(
-                    child: Text('✦',
-                        style: TextStyle(fontSize: 22, color: Colors.white)),
+                    child: Text(
+                      '✦',
+                      style: TextStyle(fontSize: 22, color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -498,23 +568,13 @@ class _SunScreenState extends State<SunScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
-          colors: [
-            Color(0x22FFD740),
-            Color(0x0EFF6D00),
-          ],
+          colors: [Color(0x22FFD740), Color(0x0EFF6D00)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: const Color(0x55FFD740),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0x55FFD740), width: 1.5),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x33FFD740),
-            blurRadius: 24,
-            spreadRadius: -4,
-          ),
+          BoxShadow(color: Color(0x33FFD740), blurRadius: 24, spreadRadius: -4),
         ],
       ),
       child: Padding(
@@ -544,8 +604,10 @@ class _SunScreenState extends State<SunScreen> {
                     ],
                   ),
                   child: const Center(
-                    child: Text('◇',
-                        style: TextStyle(fontSize: 24, color: Colors.white)),
+                    child: Text(
+                      '◇',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -582,13 +644,11 @@ class _SunScreenState extends State<SunScreen> {
             // Day out of time info
             Container(
               width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: accentColor.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
-                border:
-                    Border.all(color: accentColor.withOpacity(0.2)),
+                border: Border.all(color: accentColor.withOpacity(0.2)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

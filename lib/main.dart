@@ -61,6 +61,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // ── Sun toggles ───────────────────────────────────────────────
   bool _sunShowGregorian = true;
   bool _sunShowEnochian = true;
+  bool _sunShowLocalTime = true;
 
   // ── Seconds / profiles ────────────────────────────────────────
   late List<TimerProfile> _profiles;
@@ -91,6 +92,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _sunShowGregorian = prefs.getBool('sunShowGregorian')!;
         if (prefs.containsKey('sunShowEnochian'))
           _sunShowEnochian = prefs.getBool('sunShowEnochian')!;
+        if (prefs.containsKey('sunShowLocalTime'))
+          _sunShowLocalTime = prefs.getBool('sunShowLocalTime')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
 
@@ -116,6 +119,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
       await prefs.setBool('sunShowGregorian', _sunShowGregorian);
       await prefs.setBool('sunShowEnochian', _sunShowEnochian);
+      await prefs.setBool('sunShowLocalTime', _sunShowLocalTime);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
@@ -227,10 +231,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       builder: (_) => _SunMenuSheet(
         showGregorian: _sunShowGregorian,
         showEnochian: _sunShowEnochian,
-        onChanged: (gregorian, enochian) {
+        showLocalTime: _sunShowLocalTime,
+        onChanged: (gregorian, enochian, localTime) {
           setState(() {
             _sunShowGregorian = gregorian;
             _sunShowEnochian = enochian;
+            _sunShowLocalTime = localTime;
           });
           _savePrefs();
         },
@@ -297,6 +303,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             date: globalDate,
             showGregorian: _sunShowGregorian,
             showEnochian: _sunShowEnochian,
+            showLocalTime: _sunShowLocalTime,
           ),
           SecondsScreen(
             profiles: _profiles,
@@ -472,11 +479,13 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
 class _SunMenuSheet extends StatefulWidget {
   final bool showGregorian;
   final bool showEnochian;
-  final void Function(bool gregorian, bool enochian) onChanged;
+  final bool showLocalTime;
+  final void Function(bool gregorian, bool enochian, bool localTime) onChanged;
 
   const _SunMenuSheet({
     required this.showGregorian,
     required this.showEnochian,
+    required this.showLocalTime,
     required this.onChanged,
   });
 
@@ -487,15 +496,17 @@ class _SunMenuSheet extends StatefulWidget {
 class _SunMenuSheetState extends State<_SunMenuSheet> {
   late bool _gregorian;
   late bool _enochian;
+  late bool _localTime;
 
   @override
   void initState() {
     super.initState();
     _gregorian = widget.showGregorian;
     _enochian = widget.showEnochian;
+    _localTime = widget.showLocalTime;
   }
 
-  void _emit() => widget.onChanged(_gregorian, _enochian);
+  void _emit() => widget.onChanged(_gregorian, _enochian, _localTime);
 
   @override
   Widget build(BuildContext context) {
@@ -510,8 +521,19 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
             const Text('☀️  SOLAR OPTIONS', style: _sheetTitleStyle),
             const SizedBox(height: 16),
             _ToggleRow(
+              label: 'Local Time',
+              subtitle: 'Ticking daily solar clock momentum',
+              icon: '⏰',
+              iconColor: const Color(0xFF00E5FF),
+              value: _localTime,
+              onChanged: (v) {
+                setState(() => _localTime = v);
+                _emit();
+              },
+            ),
+            _ToggleRow(
               label: 'Gregorian Calendar',
-              subtitle: 'Standard solar date and ticking local time',
+              subtitle: 'Standard solar date and month progress',
               icon: '☀️',
               iconColor: const Color(0xFFFFA726),
               value: _gregorian,
