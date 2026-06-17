@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/moment.dart';
 import '../models/solar/gregorian_solar_time.dart';
 import '../models/solar/enochian_solar_time.dart';
+import '../widgets/realistic_sun_painter.dart';
 
 class SunScreen extends StatelessWidget {
   final DateTime date;
@@ -20,7 +21,13 @@ class SunScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.wb_sunny, size: 100, color: Colors.amber),
+              Image.asset(
+                'assets/images/static_sun_transparent_bg.png',
+                width: 320,
+                height: 320,
+                fit: BoxFit.contain,
+              ),
+              // RealisticSun(size: 300, animate: true),
               const SizedBox(height: 20),
               Text(
                 'Date: ${date.toLocal().toString().split(' ')[0]}',
