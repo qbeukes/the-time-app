@@ -1,3 +1,3 @@
 # The Time App
-Time as it Should Be
+Time and Gravity as it resonates with life.
 
