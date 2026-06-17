@@ -6,8 +6,15 @@ import '../models/solar/enochian_solar_time.dart';
 
 class SunScreen extends StatefulWidget {
   final DateTime date;
+  final bool showGregorian;
+  final bool showEnochian;
 
-  const SunScreen({super.key, required this.date});
+  const SunScreen({
+    super.key,
+    required this.date,
+    this.showGregorian = true,
+    this.showEnochian = true,
+  });
 
   @override
   State<SunScreen> createState() => _SunScreenState();
@@ -60,12 +67,16 @@ class _SunScreenState extends State<SunScreen> {
               const SizedBox(height: 20),
 
               // ── Gregorian Card ──────────────────────────────────
-              _buildGregorianCard(gregorian),
-              const SizedBox(height: 16),
+              if (widget.showGregorian) ...[
+                _buildGregorianCard(gregorian),
+                const SizedBox(height: 16),
+              ],
 
               // ── Enochian Card ───────────────────────────────────
-              _buildEnochianCard(enochian),
-              const SizedBox(height: 16),
+              if (widget.showEnochian) ...[
+                _buildEnochianCard(enochian),
+                const SizedBox(height: 16),
+              ],
             ],
           ),
         ),

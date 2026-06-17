@@ -58,6 +58,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   bool _moonShowMoonBase = false;
   bool _moonUseLocalTilt = true;
 
+  // ── Sun toggles ───────────────────────────────────────────────
+  bool _sunShowGregorian = true;
+  bool _sunShowEnochian = true;
+
   // ── Seconds / profiles ────────────────────────────────────────
   late List<TimerProfile> _profiles;
   int _activeProfileIndex = 0;
@@ -83,6 +87,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _moonShowMoonBase = prefs.getBool('moonShowMoonBase')!;
         if (prefs.containsKey('moonUseLocalTilt'))
           _moonUseLocalTilt = prefs.getBool('moonUseLocalTilt')!;
+        if (prefs.containsKey('sunShowGregorian'))
+          _sunShowGregorian = prefs.getBool('sunShowGregorian')!;
+        if (prefs.containsKey('sunShowEnochian'))
+          _sunShowEnochian = prefs.getBool('sunShowEnochian')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
 
@@ -106,6 +114,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('moonShowLuach', _moonShowLuach);
       await prefs.setBool('moonShowMoonBase', _moonShowMoonBase);
       await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
+      await prefs.setBool('sunShowGregorian', _sunShowGregorian);
+      await prefs.setBool('sunShowEnochian', _sunShowEnochian);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
@@ -173,7 +183,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         _showMoonMenu(ctx);
         break;
       case 1:
-        // Sun has no current toggles — nothing to show
+        _showSunMenu(ctx);
         break;
       case 2:
         _showSecondsMenu(ctx);
@@ -200,6 +210,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             _moonShowLuach = luach;
             _moonShowMoonBase = moonBase;
             _moonUseLocalTilt = tilt;
+          });
+          _savePrefs();
+        },
+      ),
+    );
+  }
+
+  void _showSunMenu(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: const Color(0xFF12121E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _SunMenuSheet(
+        showGregorian: _sunShowGregorian,
+        showEnochian: _sunShowEnochian,
+        onChanged: (gregorian, enochian) {
+          setState(() {
+            _sunShowGregorian = gregorian;
+            _sunShowEnochian = enochian;
           });
           _savePrefs();
         },
@@ -262,7 +293,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             showMoonBase: _moonShowMoonBase,
             useLocalTilt: _moonUseLocalTilt,
           ),
-          SunScreen(date: globalDate),
+          SunScreen(
+            date: globalDate,
+            showGregorian: _sunShowGregorian,
+            showEnochian: _sunShowEnochian,
+          ),
           SecondsScreen(
             profiles: _profiles,
             activeProfileIndex: _activeProfileIndex,
@@ -273,8 +308,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ];
 
-        // Hide burger on Sun (no toggles yet)
-        final showBurger = _currentIndex != 1;
+        // Options button is available for Moon, Sun, and Seconds screen
+        const showBurger = true;
 
         return Scaffold(
           appBar: AppBar(
@@ -420,6 +455,79 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               value: _moonBase,
               onChanged: (v) {
                 setState(() => _moonBase = v);
+                _emit();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═════════════════════════════════════════════════════════════
+// Sun options bottom sheet
+// ═════════════════════════════════════════════════════════════
+
+class _SunMenuSheet extends StatefulWidget {
+  final bool showGregorian;
+  final bool showEnochian;
+  final void Function(bool gregorian, bool enochian) onChanged;
+
+  const _SunMenuSheet({
+    required this.showGregorian,
+    required this.showEnochian,
+    required this.onChanged,
+  });
+
+  @override
+  State<_SunMenuSheet> createState() => _SunMenuSheetState();
+}
+
+class _SunMenuSheetState extends State<_SunMenuSheet> {
+  late bool _gregorian;
+  late bool _enochian;
+
+  @override
+  void initState() {
+    super.initState();
+    _gregorian = widget.showGregorian;
+    _enochian = widget.showEnochian;
+  }
+
+  void _emit() => widget.onChanged(_gregorian, _enochian);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _sheetHandle(),
+            const SizedBox(height: 20),
+            const Text('☀️  SOLAR OPTIONS', style: _sheetTitleStyle),
+            const SizedBox(height: 16),
+            _ToggleRow(
+              label: 'Gregorian Calendar',
+              subtitle: 'Standard solar date and ticking local time',
+              icon: '☀️',
+              iconColor: const Color(0xFFFFA726),
+              value: _gregorian,
+              onChanged: (v) {
+                setState(() => _gregorian = v);
+                _emit();
+              },
+            ),
+            _ToggleRow(
+              label: 'Enochian Calendar',
+              subtitle: 'Pure 364-day grid and Days out of Time',
+              icon: '✦',
+              iconColor: const Color(0xFF7C4DFF),
+              value: _enochian,
+              onChanged: (v) {
+                setState(() => _enochian = v);
                 _emit();
               },
             ),
