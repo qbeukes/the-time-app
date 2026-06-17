@@ -1,0 +1,440 @@
+You are working on Time App.
+
+Task: update the Luach layer to also be a card like the 12TRA and adding data for the Luach moon cards.
+
+This must be a card-content, visual and layer-structure update on the Luach layer. The Luach structure should be adjusted to more closely resemble that of the TRA cards so we can include the extra information later. 
+
+Do not infer correspondences by theme.
+Do not remap based on similarity.
+Do not merge the systems.
+Do not treat either system as astrology or personality typing.
+
+Moon 1 corresponds to 12TRA archetype 1.
+Moon 2 corresponds to 12TRA archetype 2.
+Moon 3 corresponds to 12TRA archetype 3.
+Continue this pattern through Moon 12.
+
+The 12TRA system has four phases:
+1. Initiation
+2. Development
+3. Progression
+4. Completion
+
+The Luach system has four directional groupings:
+1. East
+2. South
+3. West
+4. North
+
+Render these as parallel axes:
+
+Moons 1–3:
+- Luach Direction: East
+- 12TRA Phase: Initiation
+
+Moons 4–6:
+- Luach Direction: South
+- 12TRA Phase: Development
+
+Moons 7–9:
+- Luach Direction: West
+- 12TRA Phase: Progression
+
+Moons 10–12:
+- Luach Direction: North
+- 12TRA Phase: Completion
+
+Each Luach moon card must include the following information:
+
+1. Moon number
+2. Luach moon name
+3. Luach direction
+4. Gemstone
+5. Luach archetypal summary
+6. Corresponding 12TRA functional summary
+7. Short card description
+
+Use the following card content.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Yahúdah
+
+Luach Direction:
+East
+
+12TRA Phase:
+Initiation
+
+12TRA Archetype:
+1. Spark
+
+Gemstone:
+Use the canonical gemstone assigned to Yahúdah in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Yahúdah represents activation, kingship, emergence, first illumination, and the bringing of structure into visible form.
+
+12TRA Functional Summary:
+Spark represents ignition, beginning, first movement, energetic emergence, and the initiation of a new temporal cycle.
+
+Card Description:
+Yahúdah and Spark align as the first movement of the cycle: the moment where light, will, identity, and temporal action begin.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 2
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Yishshakkar
+
+Luach Direction:
+East
+
+12TRA Phase:
+Initiation
+
+12TRA Archetype:
+2. Analyst
+
+Gemstone:
+Use the canonical gemstone assigned to Yishshakkar in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Yishshakkar represents discernment of cycles, assembled knowledge, timing, counting, ordering, and recognition of pattern.
+
+12TRA Functional Summary:
+Analyst represents observation, distinction, classification, measurement, and structural understanding.
+
+Card Description:
+Yishshakkar and Analyst align as the intelligence that reads the structure of time and recognizes how the parts fit together.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 3
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Zebúwlan
+
+Luach Direction:
+East
+
+12TRA Phase:
+Initiation
+
+12TRA Archetype:
+3. Connector
+
+Gemstone:
+Use the canonical gemstone assigned to Zebúwlan in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Zebúwlan represents knowledge exchange, movement between domains, fruitful labor, extension, and circulation.
+
+12TRA Functional Summary:
+Connector represents relational linkage, transmission, exchange, network formation, and bridging between separated elements.
+
+Card Description:
+Zebúwlan and Connector align as the movement of knowledge into relationship, trade, expression, and fruitful contact.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 4
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of RAúwaben
+
+Luach Direction:
+South
+
+12TRA Phase:
+Development
+
+12TRA Archetype:
+4. Visionary
+
+Gemstone:
+Use the canonical gemstone assigned to RAúwaben in the Luach gemstone table.
+
+Luach Archetypal Summary:
+RAúwaben represents seeing, perception, revelation, foundations, hidden structure, and the opening of inner sight.
+
+12TRA Functional Summary:
+Visionary represents future-sight, pattern projection, imaginative perception, and the ability to see beyond the immediately visible.
+
+Card Description:
+RAúwaben and Visionary align as the eye of the cycle: the capacity to perceive what is forming beneath the surface.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 5
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Shamoúnn
+
+Luach Direction:
+South
+
+12TRA Phase:
+Development
+
+12TRA Archetype:
+5. Hearer
+
+Gemstone:
+Use the canonical gemstone assigned to Shamoúnn in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Shamoúnn represents hearing, reception, obedience to signal, understanding through listening, and inward resonance.
+
+12TRA Functional Summary:
+Hearer represents receptive intelligence, attunement, signal detection, listening, and resonance awareness.
+
+Card Description:
+Shamoúnn and Hearer align as the receptive chamber of the cycle: the ability to hear what time is communicating.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 6
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Gad
+
+Luach Direction:
+South
+
+12TRA Phase:
+Development
+
+12TRA Archetype:
+6. Speaker
+
+Gemstone:
+Use the canonical gemstone assigned to Gad in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Gad represents speech, words, articulation, wisdom expressed through the mouth, and manifestation through utterance.
+
+12TRA Functional Summary:
+Speaker represents expression, declaration, verbalization, communication, and the conversion of inner structure into outward signal.
+
+Card Description:
+Gad and Speaker align as the voice of the cycle: what has been seen and heard now becomes articulated.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 7
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Aparryim
+
+Luach Direction:
+West
+
+12TRA Phase:
+Progression
+
+12TRA Archetype:
+7. Architect
+
+Gemstone:
+Use the canonical gemstone assigned to Aparryim in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Aparryim represents habitation, cultivation, enclosure, covering, settlement, growth, and the ordering of space.
+
+12TRA Functional Summary:
+Architect represents structure, design, system-building, framework creation, and the making of inhabitable order.
+
+Card Description:
+Aparryim and Architect align as the builder of the cycle: the stage where resonance becomes structure.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 8
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Maneshayh
+
+Luach Direction:
+West
+
+12TRA Phase:
+Progression
+
+12TRA Archetype:
+8. Integrator
+
+Gemstone:
+Use the canonical gemstone assigned to Maneshayh in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Maneshayh represents refinement, restraint, message integration, disciplined communication, and harmonized understanding.
+
+12TRA Functional Summary:
+Integrator represents synthesis, alignment, reconciliation, coherence-building, and the joining of separate parts into a working whole.
+
+Card Description:
+Maneshayh and Integrator align as the harmonizing intelligence of the cycle: many messages are refined into one coherent pattern.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 9
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Beniyman
+
+Luach Direction:
+West
+
+12TRA Phase:
+Progression
+
+12TRA Archetype:
+9. Strategist
+
+Gemstone:
+Use the canonical gemstone assigned to Beniyman in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Beniyman represents return, renewal, chambers, restoration, right-hand action, and the reorganization of movement through cycles.
+
+12TRA Functional Summary:
+Strategist represents planning, orientation, sequencing, adaptive movement, and purposeful navigation through complexity.
+
+Card Description:
+Beniyman and Strategist align as the tactical intelligence of the cycle: return and renewal become directed movement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 10
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Dan
+
+Luach Direction:
+North
+
+12TRA Phase:
+Completion
+
+12TRA Archetype:
+10. Evaluator
+
+Gemstone:
+Use the canonical gemstone assigned to Dan in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Dan represents judgment, thresholds, openings, paths, transitions, testing, strengthening, and decision.
+
+12TRA Functional Summary:
+Evaluator represents assessment, discernment, testing, correction, judgment, and decision-making.
+
+Card Description:
+Dan and Evaluator align as the judging gate of the cycle: what has formed must now be tested, opened, corrected, or closed.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 11
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Ayshshur
+
+Luach Direction:
+North
+
+12TRA Phase:
+Completion
+
+12TRA Archetype:
+11. Harmonizer
+
+Gemstone:
+Use the canonical gemstone assigned to Ayshshur in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Ayshshur represents establishment, maturity, completion of instruction, stability, recompense, and settled capability.
+
+12TRA Functional Summary:
+Harmonizer represents balance, stabilization, agreement, relational coherence, and the restoration of internal and external equilibrium.
+
+Card Description:
+Ayshshur and Harmonizer align as the stabilizing power of the cycle: what has been tested is matured into balance.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOON 12
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Luach Moon:
+Month of Nephetli
+
+Luach Direction:
+North
+
+12TRA Phase:
+Completion
+
+12TRA Archetype:
+12. Inspirer
+
+Gemstone:
+Use the canonical gemstone assigned to Nephetli in the Luach gemstone table.
+
+Luach Archetypal Summary:
+Nephetli represents culmination, wisdom synthesis, transmission, perfected sayings, completion, and the drawing out of strength.
+
+12TRA Functional Summary:
+Inspirer represents uplift, transmission, renewal of vision, final synthesis, and the release of completed meaning into the next cycle.
+
+Card Description:
+Nephetli and Inspirer align as the completing breath of the cycle: wisdom is drawn out, transmitted, and prepared to become new initiation.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CARD DISPLAY REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Each card should visually distinguish:
+
+- Luach Moon
+- Luach Direction
+- Gemstone
+- Luach archetypal meaning
+- 12TRA functional meaning
+- Parallel resonance summary
+
+The card should make it clear that:
+
+Luach Direction is the Luach equivalent structural axis.
+12TRA Phase is the 12TRA equivalent structural axis.
+The moon and archetype correlate by number, not by interpretive matching.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LUACH GEMSTONE TABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Yahúdah — Odem
+2. Yishshakkar — Pitdah
+3. Zebúwlan — Bareketh
+4. RAúwaben — Nofech
+5. Shamoúnn — Sappir
+6. Gad — Yahalom
+7. Aparryim — Leshem
+8. Maneshayh — Shevo
+9. Beniyman — Achlamah
+10. Dan — Tarshish
+11. Ayshshur — Shoham
+12. Nephetli — Yashpheh
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINAL INTENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The update should help Time App show that Luach and 12TRA are parallel temporal architectures.
+
+Luach provides the ancient Hebraic moon-direction structure.
+12TRA provides the modern functional archetype-phase structure.
+
+The user should be able to see both systems side by side without either one overwriting the other.
+

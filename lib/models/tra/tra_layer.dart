@@ -1,5 +1,5 @@
-import 'package:inner_time/models/lunar/full_moon_based_layer.dart';
-import 'package:inner_time/models/moment.dart';
+import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
+import 'package:the_time_app/models/moment.dart';
 import 'tra_archetype.dart';
 import 'tra_phase.dart';
 

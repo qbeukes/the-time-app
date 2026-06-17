@@ -1,16 +1,3 @@
-# inner-time
+# The Time App
 Time as it Should Be
 
-# todo
-WARNING: Your Android app project: app located at: /home/x90/personal/dev/inner-time/android/app/build.gradle.kts
-applies the Kotlin Gradle Plugin, which will cause build failures in future versions of Flutter. 
-Please migrate your app to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers
-
-WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): audioplayers_android, package_info_plus, shared_preferences_android
-Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
-
-Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
-If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing 
-an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
-
-If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors

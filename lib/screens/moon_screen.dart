@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:inner_time/models/lunar/full_moon_based_layer.dart';
-import 'package:inner_time/models/lunar/new_moon_based_layer.dart';
-import 'package:inner_time/models/lunar/luach/luach_layer.dart';
-import 'package:inner_time/models/lunar/lunar_moment.dart';
-import 'package:inner_time/models/tra/tra_layer.dart';
-import 'package:inner_time/models/tra/tra_archetype.dart';
+import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
+import 'package:the_time_app/models/lunar/new_moon_based_layer.dart';
+import 'package:the_time_app/models/lunar/luach/luach_layer.dart';
+import 'package:the_time_app/models/lunar/lunar_moment.dart';
+import 'package:the_time_app/models/tra/tra_layer.dart';
+import 'package:the_time_app/models/tra/tra_archetype.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
 import '../widgets/stylized_moon.dart';
 

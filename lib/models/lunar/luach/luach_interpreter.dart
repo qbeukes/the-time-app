@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:inner_time/models/moment.dart';
+import 'package:the_time_app/models/moment.dart';
 
 class LuachMoon {
   final String name;
@@ -66,12 +66,14 @@ class LuachInterpreter {
         final date = DateTime.tryParse(dateStr);
         if (date != null) {
           final moonNumberInYear = _getMoonNumberFromName(name);
-          _moons.add(LuachMoon(
-            name: name,
-            date: date,
-            yearType: yearType,
-            moonNumberInYear: moonNumberInYear,
-          ));
+          _moons.add(
+            LuachMoon(
+              name: name,
+              date: date,
+              yearType: yearType,
+              moonNumberInYear: moonNumberInYear,
+            ),
+          );
         }
       }
     }

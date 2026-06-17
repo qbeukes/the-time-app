@@ -4,22 +4,22 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:inner_time/screens/moon_screen.dart';
-import 'package:inner_time/screens/sun_screen.dart';
-import 'package:inner_time/screens/seconds_screen.dart';
-import 'package:inner_time/models/timer_profile.dart';
+import 'package:the_time_app/screens/moon_screen.dart';
+import 'package:the_time_app/screens/sun_screen.dart';
+import 'package:the_time_app/screens/seconds_screen.dart';
+import 'package:the_time_app/models/timer_profile.dart';
 
 void main() {
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,
-      builder: (context) => const InnerTimeApp(),
+      builder: (context) => const TheTimeApp(),
     ),
   );
 }
 
-class InnerTimeApp extends StatelessWidget {
-  const InnerTimeApp({super.key});
+class TheTimeApp extends StatelessWidget {
+  const TheTimeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class InnerTimeApp extends StatelessWidget {
       useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
-      title: 'Inner Time',
+      title: 'The Time App',
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.deepPurple,
@@ -75,15 +75,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        if (prefs.containsKey('moonShowTra')) _moonShowTra = prefs.getBool('moonShowTra')!;
-        if (prefs.containsKey('moonShowLuach')) _moonShowLuach = prefs.getBool('moonShowLuach')!;
-        if (prefs.containsKey('moonShowMoonBase')) _moonShowMoonBase = prefs.getBool('moonShowMoonBase')!;
-        if (prefs.containsKey('moonUseLocalTilt')) _moonUseLocalTilt = prefs.getBool('moonUseLocalTilt')!;
-        if (prefs.containsKey('activeProfileIndex')) _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
-        
+        if (prefs.containsKey('moonShowTra'))
+          _moonShowTra = prefs.getBool('moonShowTra')!;
+        if (prefs.containsKey('moonShowLuach'))
+          _moonShowLuach = prefs.getBool('moonShowLuach')!;
+        if (prefs.containsKey('moonShowMoonBase'))
+          _moonShowMoonBase = prefs.getBool('moonShowMoonBase')!;
+        if (prefs.containsKey('moonUseLocalTilt'))
+          _moonUseLocalTilt = prefs.getBool('moonUseLocalTilt')!;
+        if (prefs.containsKey('activeProfileIndex'))
+          _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
+
         final profilesJson = prefs.getStringList('profiles');
         if (profilesJson != null) {
-          _profiles = profilesJson.map((s) => TimerProfile.fromJson(jsonDecode(s))).toList();
+          _profiles = profilesJson
+              .map((s) => TimerProfile.fromJson(jsonDecode(s)))
+              .toList();
           if (_activeProfileIndex >= _profiles.length) _activeProfileIndex = 0;
         }
       });
@@ -100,7 +107,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('moonShowMoonBase', _moonShowMoonBase);
       await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
-      final profilesJson = _profiles.map((p) => jsonEncode(p.toJson())).toList();
+      final profilesJson = _profiles
+          .map((p) => jsonEncode(p.toJson()))
+          .toList();
       await prefs.setStringList('profiles', profilesJson);
     } catch (e) {
       debugPrint('Error saving prefs: $e');
@@ -148,10 +157,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     // Only swipe on Moon / Sun tabs (not Seconds)
     if (_currentIndex == 2) return;
     if (details.primaryDelta != null) {
-      final int deltaMs =
-          (-details.primaryDelta! / 10.0 * 24 * 60 * 60 * 1000).round();
-      _globalMomentNotifier.value =
-          _globalMomentNotifier.value.add(Duration(milliseconds: deltaMs));
+      final int deltaMs = (-details.primaryDelta! / 10.0 * 24 * 60 * 60 * 1000)
+          .round();
+      _globalMomentNotifier.value = _globalMomentNotifier.value.add(
+        Duration(milliseconds: deltaMs),
+      );
     }
   }
 
@@ -176,7 +186,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       context: ctx,
       backgroundColor: const Color(0xFF12121E),
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => _MoonMenuSheet(
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
@@ -202,7 +213,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       backgroundColor: const Color(0xFF12121E),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       builder: (_) => _SecondsMenuSheet(
         profiles: _profiles,
         activeIndex: _activeProfileIndex,
@@ -266,8 +278,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(
-                ['Moon Time', 'Solar Time', 'Seconds'][_currentIndex]),
+            title: Text(['Moon Time', 'Solar Time', 'Seconds'][_currentIndex]),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -290,22 +301,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           body: GestureDetector(
             onHorizontalDragUpdate: _handleHorizontalDragUpdate,
             behavior: HitTestBehavior.opaque,
-            child: IndexedStack(
-              index: _currentIndex,
-              children: screens,
-            ),
+            child: IndexedStack(index: _currentIndex, children: screens),
           ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: (i) => setState(() => _currentIndex = i),
             items: const [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.nightlight_round), label: 'Moon'),
+                icon: Icon(Icons.nightlight_round),
+                label: 'Moon',
+              ),
+              BottomNavigationBarItem(icon: Icon(Icons.wb_sunny), label: 'Sun'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.wb_sunny), label: 'Sun'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.hourglass_bottom_rounded),
-                  label: 'Seconds'),
+                icon: Icon(Icons.hourglass_bottom_rounded),
+                label: 'Seconds',
+              ),
             ],
           ),
         );
@@ -374,7 +384,10 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               icon: '✦',
               iconColor: Colors.deepPurpleAccent,
               value: _tra,
-              onChanged: (v) { setState(() => _tra = v); _emit(); },
+              onChanged: (v) {
+                setState(() => _tra = v);
+                _emit();
+              },
             ),
             _ToggleRow(
               label: 'Luach Layer',
@@ -382,7 +395,10 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               icon: '🌙',
               iconColor: Colors.tealAccent,
               value: _luach,
-              onChanged: (v) { setState(() => _luach = v); _emit(); },
+              onChanged: (v) {
+                setState(() => _luach = v);
+                _emit();
+              },
             ),
             if (widget.hasLocation)
               _ToggleRow(
@@ -391,7 +407,10 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
                 icon: '📍',
                 iconColor: Colors.amberAccent,
                 value: _tilt,
-                onChanged: (v) { setState(() => _tilt = v); _emit(); },
+                onChanged: (v) {
+                  setState(() => _tilt = v);
+                  _emit();
+                },
               ),
             _ToggleRow(
               label: 'Lunar Anchors',
@@ -399,7 +418,10 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               icon: '🌕',
               iconColor: const Color(0xFFFFC107),
               value: _moonBase,
-              onChanged: (v) { setState(() => _moonBase = v); _emit(); },
+              onChanged: (v) {
+                setState(() => _moonBase = v);
+                _emit();
+              },
             ),
           ],
         ),
@@ -476,7 +498,11 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-            24, 16, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          24,
+          16,
+          24,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -493,7 +519,9 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.deepPurpleAccent,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                   ),
                 ),
               ],
@@ -503,7 +531,8 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
             // Profile list
             ConstrainedBox(
               constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.5),
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+              ),
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: _profiles.length,
@@ -518,8 +547,7 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
                       widget.onSelectProfile(i);
                     },
                     onEdit: () => _openEditor(existing: p, index: i),
-                    onDelete:
-                        _profiles.length > 1 ? () => _delete(i) : null,
+                    onDelete: _profiles.length > 1 ? () => _delete(i) : null,
                   );
                 },
               ),
@@ -578,9 +606,7 @@ class _ProfileListTile extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isActive
-                    ? Colors.deepPurpleAccent
-                    : Colors.white24,
+                color: isActive ? Colors.deepPurpleAccent : Colors.white24,
               ),
             ),
             const SizedBox(width: 12),
@@ -594,9 +620,7 @@ class _ProfileListTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: isActive
-                          ? Colors.white
-                          : Colors.white70,
+                      color: isActive ? Colors.white : Colors.white70,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -604,25 +628,29 @@ class _ProfileListTile extends StatelessWidget {
                     '${profile.durationLabel}  •  '
                     '${profile.bellAtSeconds.length} bell'
                     '${profile.bellAtSeconds.length != 1 ? 's' : ''}',
-                    style: const TextStyle(
-                        fontSize: 11, color: Colors.white38),
+                    style: const TextStyle(fontSize: 11, color: Colors.white38),
                   ),
                 ],
               ),
             ),
             // Edit button
             IconButton(
-              icon: const Icon(Icons.edit_rounded,
-                  size: 18, color: Colors.white38),
+              icon: const Icon(
+                Icons.edit_rounded,
+                size: 18,
+                color: Colors.white38,
+              ),
               onPressed: onEdit,
               tooltip: 'Edit profile',
             ),
             // Delete button
             if (onDelete != null)
               IconButton(
-                icon: Icon(Icons.delete_outline_rounded,
-                    size: 18,
-                    color: Colors.redAccent.withOpacity(0.6)),
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 18,
+                  color: Colors.redAccent.withOpacity(0.6),
+                ),
                 onPressed: onDelete,
                 tooltip: 'Delete profile',
               ),
@@ -710,7 +738,9 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) return;
     final p = TimerProfile(
-      id: widget.profile?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.profile?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
       durationSeconds: _durationSecs,
       bellAtSeconds: _bells,
@@ -725,7 +755,11 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-            24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
+          24,
+          24,
+          24,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -767,9 +801,10 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(':',
-                      style: TextStyle(
-                          fontSize: 20, color: Colors.white54)),
+                  child: Text(
+                    ':',
+                    style: TextStyle(fontSize: 20, color: Colors.white54),
+                  ),
                 ),
                 Expanded(
                   child: TextField(
@@ -792,8 +827,9 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                 Text(
                   '(seconds from start)',
                   style: TextStyle(
-                      fontSize: 9,
-                      color: Colors.white.withOpacity(0.25)),
+                    fontSize: 9,
+                    color: Colors.white.withOpacity(0.25),
+                  ),
                 ),
               ],
             ),
@@ -806,23 +842,28 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                 runSpacing: 6,
                 children: _bells.map((b) {
                   return Chip(
-                    backgroundColor:
-                        Colors.deepPurpleAccent.withOpacity(0.15),
+                    backgroundColor: Colors.deepPurpleAccent.withOpacity(0.15),
                     side: BorderSide(
-                        color: Colors.deepPurpleAccent.withOpacity(0.4)),
+                      color: Colors.deepPurpleAccent.withOpacity(0.4),
+                    ),
                     label: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text('🔔 ',
-                            style: TextStyle(fontSize: 12)),
-                        Text(_fmt(b),
-                            style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.deepPurpleAccent)),
+                        const Text('🔔 ', style: TextStyle(fontSize: 12)),
+                        Text(
+                          _fmt(b),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.deepPurpleAccent,
+                          ),
+                        ),
                       ],
                     ),
-                    deleteIcon: const Icon(Icons.close_rounded,
-                        size: 14, color: Colors.white38),
+                    deleteIcon: const Icon(
+                      Icons.close_rounded,
+                      size: 14,
+                      color: Colors.white38,
+                    ),
                     onDeleted: () => _removeBell(b),
                   );
                 }).toList(),
@@ -837,24 +878,23 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                     controller: _bellMinCtrl,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 14),
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                     decoration: _inputDecor('min'),
                   ),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(':',
-                      style: TextStyle(
-                          fontSize: 18, color: Colors.white38)),
+                  child: Text(
+                    ':',
+                    style: TextStyle(fontSize: 18, color: Colors.white38),
+                  ),
                 ),
                 Expanded(
                   child: TextField(
                     controller: _bellSecCtrl,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: Colors.white, fontSize: 14),
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                     decoration: _inputDecor('sec'),
                   ),
                 ),
@@ -862,13 +902,15 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                 ElevatedButton(
                   onPressed: _addBell,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.deepPurpleAccent.withOpacity(0.25),
+                    backgroundColor: Colors.deepPurpleAccent.withOpacity(0.25),
                     foregroundColor: Colors.deepPurpleAccent,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 14),
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
                   ),
                   child: const Icon(Icons.add_rounded, size: 20),
                 ),
@@ -883,8 +925,10 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel',
-                      style: TextStyle(color: Colors.white38)),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white38),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
@@ -893,9 +937,12 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
                     backgroundColor: Colors.deepPurpleAccent,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                   child: const Text('Save'),
                 ),
@@ -908,24 +955,25 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
   }
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.06),
-        isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.12))),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.12))),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide:
-                const BorderSide(color: Colors.deepPurpleAccent)),
-      );
+    hintText: hint,
+    hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+    filled: true,
+    fillColor: Colors.white.withOpacity(0.06),
+    isDense: true,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: const BorderSide(color: Colors.deepPurpleAccent),
+    ),
+  );
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -933,14 +981,15 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
 // ═════════════════════════════════════════════════════════════
 
 Widget _sheetHandle() => Center(
-      child: Container(
-        width: 40,
-        height: 4,
-        decoration: BoxDecoration(
-            color: Colors.white24,
-            borderRadius: BorderRadius.circular(2)),
-      ),
-    );
+  child: Container(
+    width: 40,
+    height: 4,
+    decoration: BoxDecoration(
+      color: Colors.white24,
+      borderRadius: BorderRadius.circular(2),
+    ),
+  ),
+);
 
 const _sheetTitleStyle = TextStyle(
   fontSize: 13,
@@ -980,22 +1029,27 @@ class _ToggleRow extends StatelessWidget {
               color: iconColor.withOpacity(0.12),
               border: Border.all(color: iconColor.withOpacity(0.25)),
             ),
-            child:
-                Center(child: Text(icon, style: const TextStyle(fontSize: 16))),
+            child: Center(
+              child: Text(icon, style: const TextStyle(fontSize: 16)),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white)),
-                Text(subtitle,
-                    style: const TextStyle(
-                        fontSize: 11, color: Colors.white38)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: const TextStyle(fontSize: 11, color: Colors.white38),
+                ),
               ],
             ),
           ),
@@ -1012,11 +1066,12 @@ class _Label extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        text,
-        style: const TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
-            color: Colors.white38),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 9,
+      fontWeight: FontWeight.bold,
+      letterSpacing: 2,
+      color: Colors.white38,
+    ),
+  );
 }

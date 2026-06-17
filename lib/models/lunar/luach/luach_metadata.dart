@@ -1,5 +1,5 @@
-import 'package:inner_time/models/tra/tra_archetype.dart';
-import 'package:inner_time/models/tra/tra_phase.dart';
+import 'package:the_time_app/models/tra/tra_archetype.dart';
+import 'package:the_time_app/models/tra/tra_phase.dart';
 
 class LuachMoonMetadata {
   final int number;
@@ -31,9 +31,12 @@ class LuachMoonMetadata {
       name: 'Yahúdah',
       direction: 'East',
       gemstone: 'Odem',
-      archetypalSummary: 'Yahúdah represents activation, kingship, emergence, first illumination, and the bringing of structure into visible form.',
-      traFunctionalSummary: 'Spark represents ignition, beginning, first movement, energetic emergence, and the initiation of a new temporal cycle.',
-      cardDescription: 'Yahúdah and Spark align as the first movement of the cycle: the moment where light, will, identity, and temporal action begin.',
+      archetypalSummary:
+          'Yahúdah represents activation, kingship, emergence, first illumination, and the bringing of structure into visible form.',
+      traFunctionalSummary:
+          'Spark represents ignition, beginning, first movement, energetic emergence, and the initiation of a new temporal cycle.',
+      cardDescription:
+          'Yahúdah and Spark align as the first movement of the cycle: the moment where light, will, identity, and temporal action begin.',
       traPhase: 'Initiation',
       traArchetype: 'Spark',
     ),
@@ -42,9 +45,12 @@ class LuachMoonMetadata {
       name: 'Yishshakkar',
       direction: 'East',
       gemstone: 'Pitdah',
-      archetypalSummary: 'Yishshakkar represents discernment of cycles, assembled knowledge, timing, counting, ordering, and recognition of pattern.',
-      traFunctionalSummary: 'Analyst represents observation, distinction, classification, measurement, and structural understanding.',
-      cardDescription: 'Yishshakkar and Analyst align as the intelligence that reads the structure of time and recognizes how the parts fit together.',
+      archetypalSummary:
+          'Yishshakkar represents discernment of cycles, assembled knowledge, timing, counting, ordering, and recognition of pattern.',
+      traFunctionalSummary:
+          'Analyst represents observation, distinction, classification, measurement, and structural understanding.',
+      cardDescription:
+          'Yishshakkar and Analyst align as the intelligence that reads the structure of time and recognizes how the parts fit together.',
       traPhase: 'Initiation',
       traArchetype: 'Analyst',
     ),
@@ -53,9 +59,12 @@ class LuachMoonMetadata {
       name: 'Zebúwlan',
       direction: 'East',
       gemstone: 'Bareketh',
-      archetypalSummary: 'Zebúwlan represents knowledge exchange, movement between domains, fruitful labor, extension, and circulation.',
-      traFunctionalSummary: 'Connector represents relational linkage, transmission, exchange, network formation, and bridging between separated elements.',
-      cardDescription: 'Zebúwlan and Connector align as the movement of knowledge into relationship, trade, expression, and fruitful contact.',
+      archetypalSummary:
+          'Zebúwlan represents knowledge exchange, movement between domains, fruitful labor, extension, and circulation.',
+      traFunctionalSummary:
+          'Connector represents relational linkage, transmission, exchange, network formation, and bridging between separated elements.',
+      cardDescription:
+          'Zebúwlan and Connector align as the movement of knowledge into relationship, trade, expression, and fruitful contact.',
       traPhase: 'Initiation',
       traArchetype: 'Connector',
     ),
@@ -64,9 +73,12 @@ class LuachMoonMetadata {
       name: 'RAúwaben',
       direction: 'South',
       gemstone: 'Nofech',
-      archetypalSummary: 'RAúwaben represents seeing, perception, revelation, foundations, hidden structure, and the opening of inner sight.',
-      traFunctionalSummary: 'Visionary represents future-sight, pattern projection, imaginative perception, and the ability to see beyond the immediately visible.',
-      cardDescription: 'RAúwaben and Visionary align as the eye of the cycle: the capacity to perceive what is forming beneath the surface.',
+      archetypalSummary:
+          'RAúwaben represents seeing, perception, revelation, foundations, hidden structure, and the opening of inner sight.',
+      traFunctionalSummary:
+          'Visionary represents future-sight, pattern projection, imaginative perception, and the ability to see beyond the immediately visible.',
+      cardDescription:
+          'RAúwaben and Visionary align as the eye of the cycle: the capacity to perceive what is forming beneath the surface.',
       traPhase: 'Development',
       traArchetype: 'Visionary',
     ),
@@ -75,9 +87,12 @@ class LuachMoonMetadata {
       name: 'Shamoúnn',
       direction: 'South',
       gemstone: 'Sappir',
-      archetypalSummary: 'Shamoúnn represents hearing, reception, obedience to signal, understanding through listening, and inward resonance.',
-      traFunctionalSummary: 'Hearer represents receptive intelligence, attunement, signal detection, listening, and resonance awareness.',
-      cardDescription: 'Shamoúnn and Hearer align as the receptive chamber of the cycle: the ability to hear what time is communicating.',
+      archetypalSummary:
+          'Shamoúnn represents hearing, reception, obedience to signal, understanding through listening, and inward resonance.',
+      traFunctionalSummary:
+          'Hearer represents receptive intelligence, attunement, signal detection, listening, and resonance awareness.',
+      cardDescription:
+          'Shamoúnn and Hearer align as the receptive chamber of the cycle: the ability to hear what time is communicating.',
       traPhase: 'Development',
       traArchetype: 'Hearer',
     ),
@@ -86,9 +101,12 @@ class LuachMoonMetadata {
       name: 'Gad',
       direction: 'South',
       gemstone: 'Yahalom',
-      archetypalSummary: 'Gad represents speech, words, articulation, wisdom expressed through the mouth, and manifestation through utterance.',
-      traFunctionalSummary: 'Speaker represents expression, declaration, verbalization, communication, and the conversion of inner structure into outward signal.',
-      cardDescription: 'Gad and Speaker align as the voice of the cycle: what has been seen and heard now becomes articulated.',
+      archetypalSummary:
+          'Gad represents speech, words, articulation, wisdom expressed through the mouth, and manifestation through utterance.',
+      traFunctionalSummary:
+          'Speaker represents expression, declaration, verbalization, communication, and the conversion of inner structure into outward signal.',
+      cardDescription:
+          'Gad and Speaker align as the voice of the cycle: what has been seen and heard now becomes articulated.',
       traPhase: 'Development',
       traArchetype: 'Speaker',
     ),
@@ -97,9 +115,12 @@ class LuachMoonMetadata {
       name: 'Aparryim',
       direction: 'West',
       gemstone: 'Leshem',
-      archetypalSummary: 'Aparryim represents habitation, cultivation, enclosure, covering, settlement, growth, and the ordering of space.',
-      traFunctionalSummary: 'Architect represents structure, design, system-building, framework creation, and the making of inhabitable order.',
-      cardDescription: 'Aparryim and Architect align as the builder of the cycle: the stage where resonance becomes structure.',
+      archetypalSummary:
+          'Aparryim represents habitation, cultivation, enclosure, covering, settlement, growth, and the ordering of space.',
+      traFunctionalSummary:
+          'Architect represents structure, design, system-building, framework creation, and the making of inhabitable order.',
+      cardDescription:
+          'Aparryim and Architect align as the builder of the cycle: the stage where resonance becomes structure.',
       traPhase: 'Progression',
       traArchetype: 'Architect',
     ),
@@ -108,9 +129,12 @@ class LuachMoonMetadata {
       name: 'Maneshayh',
       direction: 'West',
       gemstone: 'Shevo',
-      archetypalSummary: 'Maneshayh represents refinement, restraint, message integration, disciplined communication, and harmonized understanding.',
-      traFunctionalSummary: 'Integrator represents synthesis, alignment, reconciliation, coherence-building, and the joining of separate parts into a working whole.',
-      cardDescription: 'Maneshayh and Integrator align as the harmonizing intelligence of the cycle: many messages are refined into one coherent pattern.',
+      archetypalSummary:
+          'Maneshayh represents refinement, restraint, message integration, disciplined communication, and harmonized understanding.',
+      traFunctionalSummary:
+          'Integrator represents synthesis, alignment, reconciliation, coherence-building, and the joining of separate parts into a working whole.',
+      cardDescription:
+          'Maneshayh and Integrator align as the harmonizing intelligence of the cycle: many messages are refined into one coherent pattern.',
       traPhase: 'Progression',
       traArchetype: 'Integrator',
     ),
@@ -119,9 +143,12 @@ class LuachMoonMetadata {
       name: 'Beniyman',
       direction: 'West',
       gemstone: 'Achlamah',
-      archetypalSummary: 'Beniyman represents return, renewal, chambers, restoration, right-hand action, and the reorganization of movement through cycles.',
-      traFunctionalSummary: 'Strategist represents planning, orientation, sequencing, adaptive movement, and purposeful navigation through complexity.',
-      cardDescription: 'Beniyman and Strategist align as the tactical intelligence of the cycle: return and renewal become directed movement.',
+      archetypalSummary:
+          'Beniyman represents return, renewal, chambers, restoration, right-hand action, and the reorganization of movement through cycles.',
+      traFunctionalSummary:
+          'Strategist represents planning, orientation, sequencing, adaptive movement, and purposeful navigation through complexity.',
+      cardDescription:
+          'Beniyman and Strategist align as the tactical intelligence of the cycle: return and renewal become directed movement.',
       traPhase: 'Progression',
       traArchetype: 'Strategist',
     ),
@@ -130,9 +157,12 @@ class LuachMoonMetadata {
       name: 'Dan',
       direction: 'North',
       gemstone: 'Tarshish',
-      archetypalSummary: 'Dan represents judgment, thresholds, openings, paths, transitions, testing, strengthening, and decision.',
-      traFunctionalSummary: 'Evaluator represents assessment, discernment, testing, correction, judgment, and decision-making.',
-      cardDescription: 'Dan and Evaluator align as the judging gate of the cycle: what has formed must now be tested, opened, corrected, or closed.',
+      archetypalSummary:
+          'Dan represents judgment, thresholds, openings, paths, transitions, testing, strengthening, and decision.',
+      traFunctionalSummary:
+          'Evaluator represents assessment, discernment, testing, correction, judgment, and decision-making.',
+      cardDescription:
+          'Dan and Evaluator align as the judging gate of the cycle: what has formed must now be tested, opened, corrected, or closed.',
       traPhase: 'Completion',
       traArchetype: 'Evaluator',
     ),
@@ -141,9 +171,12 @@ class LuachMoonMetadata {
       name: 'Ayshshur',
       direction: 'North',
       gemstone: 'Shoham',
-      archetypalSummary: 'Ayshshur represents establishment, maturity, completion of instruction, stability, recompense, and settled capability.',
-      traFunctionalSummary: 'Harmonizer represents balance, stabilization, agreement, relational coherence, and the restoration of internal and external equilibrium.',
-      cardDescription: 'Ayshshur and Harmonizer align as the stabilizing power of the cycle: what has been tested is matured into balance.',
+      archetypalSummary:
+          'Ayshshur represents establishment, maturity, completion of instruction, stability, recompense, and settled capability.',
+      traFunctionalSummary:
+          'Harmonizer represents balance, stabilization, agreement, relational coherence, and the restoration of internal and external equilibrium.',
+      cardDescription:
+          'Ayshshur and Harmonizer align as the stabilizing power of the cycle: what has been tested is matured into balance.',
       traPhase: 'Completion',
       traArchetype: 'Harmonizer',
     ),
@@ -152,9 +185,12 @@ class LuachMoonMetadata {
       name: 'Nephetli',
       direction: 'North',
       gemstone: 'Yashpheh',
-      archetypalSummary: 'Nephetli represents culmination, wisdom synthesis, transmission, perfected sayings, completion, and the drawing out of strength.',
-      traFunctionalSummary: 'Inspirer represents uplift, transmission, renewal of vision, final synthesis, and the release of completed meaning into the next cycle.',
-      cardDescription: 'Nephetli and Inspirer align as the completing breath of the cycle: wisdom is drawn out, transmitted, and prepared to become new initiation.',
+      archetypalSummary:
+          'Nephetli represents culmination, wisdom synthesis, transmission, perfected sayings, completion, and the drawing out of strength.',
+      traFunctionalSummary:
+          'Inspirer represents uplift, transmission, renewal of vision, final synthesis, and the release of completed meaning into the next cycle.',
+      cardDescription:
+          'Nephetli and Inspirer align as the completing breath of the cycle: wisdom is drawn out, transmitted, and prepared to become new initiation.',
       traPhase: 'Completion',
       traArchetype: 'Inspirer',
     ),
@@ -163,9 +199,12 @@ class LuachMoonMetadata {
       name: 'Berúwkah',
       direction: 'Leap / Intercalary',
       gemstone: 'Beryl',
-      archetypalSummary: 'Berúwkah represents blessing, transition, systemic alignment, and the balancing of the solar-lunar offset.',
-      traFunctionalSummary: 'An extra-cyclical adjustment node ensuring synchronization across multi-year cycles.',
-      cardDescription: 'Berúwkah serves as the intercalary transition: a periodic adjustment phase resetting the alignment between lunar months and solar years.',
+      archetypalSummary:
+          'Berúwkah represents blessing, transition, systemic alignment, and the balancing of the solar-lunar offset.',
+      traFunctionalSummary:
+          'An extra-cyclical adjustment node ensuring synchronization across multi-year cycles.',
+      cardDescription:
+          'Berúwkah serves as the intercalary transition: a periodic adjustment phase resetting the alignment between lunar months and solar years.',
       traPhase: 'Leap',
       traArchetype: 'None / Intercalary',
     ),

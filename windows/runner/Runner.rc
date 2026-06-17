@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "inner_time" "\0"
+            VALUE "CompanyName", "myceliapp" "\0"
+            VALUE "FileDescription", "The Time App" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "inner_time" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "inner_time.exe" "\0"
-            VALUE "ProductName", "inner_time" "\0"
+            VALUE "InternalName", "the_time_app" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Quintin Beukes. All rights reserved." "\0"
+            VALUE "OriginalFilename", "the_time_app.exe" "\0"
+            VALUE "ProductName", "The Time App" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
