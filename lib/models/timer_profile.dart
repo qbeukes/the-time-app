@@ -4,26 +4,22 @@
 class TimerProfile {
   final String id;
   String name;
-  int durationSeconds;
   List<int> bellAtSeconds; // sorted, seconds from start
 
   TimerProfile({
     required this.id,
     required this.name,
-    required this.durationSeconds,
     required this.bellAtSeconds,
   });
 
   TimerProfile copyWith({
     String? id,
     String? name,
-    int? durationSeconds,
     List<int>? bellAtSeconds,
   }) {
     return TimerProfile(
       id: id ?? this.id,
       name: name ?? this.name,
-      durationSeconds: durationSeconds ?? this.durationSeconds,
       bellAtSeconds:
           bellAtSeconds != null ? List<int>.from(bellAtSeconds) : List<int>.from(this.bellAtSeconds),
     );
@@ -32,7 +28,6 @@ class TimerProfile {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'durationSeconds': durationSeconds,
         'bellAtSeconds': bellAtSeconds,
       };
 
@@ -40,36 +35,25 @@ class TimerProfile {
     return TimerProfile(
       id: json['id'] as String,
       name: json['name'] as String,
-      durationSeconds: json['durationSeconds'] as int,
       bellAtSeconds: List<int>.from(json['bellAtSeconds'] as List? ?? []),
     );
   }
 
-  String get durationLabel {
-    final m = durationSeconds ~/ 60;
-    final s = durationSeconds % 60;
-    if (s == 0) return '${m}m';
-    return '${m}m ${s}s';
-  }
-
   static List<TimerProfile> get defaults => [
         TimerProfile(
-          id: 'default_simple',
-          name: 'Simple',
-          durationSeconds: 300,
-          bellAtSeconds: [0, 300],
+          id: 'default_open',
+          name: 'Open Space',
+          bellAtSeconds: [],
         ),
         TimerProfile(
-          id: 'default_breath',
-          name: 'Breath Cycles',
-          durationSeconds: 900,
+          id: 'default_intervals',
+          name: '5 Min Interval',
           bellAtSeconds: [0, 300, 600, 900],
         ),
         TimerProfile(
-          id: 'default_deep',
-          name: 'Deep 20',
-          durationSeconds: 1200,
-          bellAtSeconds: [0, 600, 1200],
+          id: 'default_zen',
+          name: 'Zen Sit',
+          bellAtSeconds: [0, 60, 180, 300, 600],
         ),
       ];
 }

@@ -328,9 +328,7 @@ class _SecondsTimerState extends State<SecondsTimer>
                             ),
                             if (_isRunning)
                               Text(
-                                _breathAnim.value > 0.5
-                                    ? 'exhale'
-                                    : 'inhale',
+                                'breath and witness',
                                 style: TextStyle(
                                   fontSize: 11,
                                   letterSpacing: 1.5,
@@ -404,7 +402,9 @@ class _SecondsTimerState extends State<SecondsTimer>
                       ],
                     ),
                     child: Icon(
-                      _isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      _isRunning
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
                       color: Colors.white,
                       size: 32,
                     ),
@@ -482,9 +482,8 @@ class _SecondsTimerState extends State<SecondsTimer>
                       spacing: 8,
                       runSpacing: 6,
                       children: _presets.map((p) {
-                        final isSelected = _totalSeconds == p.$2 &&
-                            !_isRunning &&
-                            !_isPaused;
+                        final isSelected =
+                            _totalSeconds == p.$2 && !_isRunning && !_isPaused;
                         return GestureDetector(
                           onTap: () => _applyPreset(p.$2),
                           child: AnimatedContainer(

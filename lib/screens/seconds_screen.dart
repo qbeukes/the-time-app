@@ -36,7 +36,7 @@ class _SecondsScreenState extends State<SecondsScreen>
 
   // Lock overlay state
   OverlayEntry? _lockOverlayEntry;
-  final ValueNotifier<int> _remainingNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> _elapsedNotifier = ValueNotifier<int>(0);
   final ValueNotifier<bool> _isLockedNotifier = ValueNotifier<bool>(false);
 
   // Bell cycling: bell1 → bell2 → bell3 → bell1 → …
@@ -57,12 +57,7 @@ class _SecondsScreenState extends State<SecondsScreen>
 
   TimerProfile get _profile => widget.profiles[widget.activeProfileIndex];
 
-  int get _remaining =>
-      (_profile.durationSeconds - _elapsedSeconds).clamp(0, _profile.durationSeconds);
-
-  double get _progress => _profile.durationSeconds > 0
-      ? (_elapsedSeconds / _profile.durationSeconds).clamp(0.0, 1.0)
-      : 0.0;
+  double get _progress => _isRunning ? (_elapsedSeconds % 60) / 60.0 : 0.0;
 
   @override
   void initState() {
@@ -70,21 +65,31 @@ class _SecondsScreenState extends State<SecondsScreen>
     WidgetsBinding.instance.addObserver(this);
 
     _pulseCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1100))
-      ..repeat(reverse: true);
-    _pulseAnim = Tween<double>(begin: 0.97, end: 1.03).animate(
-        CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    )..repeat(reverse: true);
+    _pulseAnim = Tween<double>(
+      begin: 0.97,
+      end: 1.03,
+    ).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
 
     _breathCtrl = AnimationController(
-        vsync: this, duration: const Duration(seconds: 4))
-      ..repeat(reverse: true);
-    _breathAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _breathCtrl, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+    _breathAnim = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _breathCtrl, curve: Curves.easeInOut));
 
     _bellFlashCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200));
-    _bellFlashAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _bellFlashCtrl, curve: Curves.easeOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _bellFlashAnim = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _bellFlashCtrl, curve: Curves.easeOut));
   }
 
   @override
@@ -105,31 +110,23 @@ class _SecondsScreenState extends State<SecondsScreen>
         final newElapsed = _elapsedAtStart + diff;
 
         bool missedBell = false;
-        for (int s = _elapsedSeconds + 1; s <= newElapsed; s++) {
-          if (_profile.bellAtSeconds.contains(s) && !_firedBells.contains(s)) {
-            missedBell = true;
-            _firedBells.add(s);
+        final bells = _profile.bellAtSeconds;
+        if (bells.isNotEmpty) {
+          for (int s = _elapsedSeconds + 1; s <= newElapsed; s++) {
+            if (bells.contains(s) && !_firedBells.contains(s)) {
+              missedBell = true;
+              _firedBells.add(s);
+            }
           }
         }
 
         setState(() {
           _elapsedSeconds = newElapsed;
-          _remainingNotifier.value = _remaining;
+          _elapsedNotifier.value = _elapsedSeconds;
         });
 
         if (missedBell) {
           _ringBell();
-        }
-
-        if (_elapsedSeconds >= _profile.durationSeconds) {
-          _tickTimer?.cancel();
-          setState(() {
-            _isRunning = false;
-            _isPaused = false;
-          });
-          WakelockPlus.disable();
-          _unlockScreen();
-          _onComplete();
         }
       }
     }
@@ -145,7 +142,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     _bellFlashCtrl.dispose();
     WakelockPlus.disable();
     _unlockScreen();
-    _remainingNotifier.dispose();
+    _elapsedNotifier.dispose();
     _isLockedNotifier.dispose();
     super.dispose();
   }
@@ -153,12 +150,18 @@ class _SecondsScreenState extends State<SecondsScreen>
   // ── Timer logic ───────────────────────────────────────────────
 
   void _start() {
-    // Fire start bell if at second 0
-    if (!_isPaused &&
-        _profile.bellAtSeconds.contains(0) &&
-        !_firedBells.contains(0)) {
-      _ringBell(); // fire-and-forget
-      _firedBells.add(0);
+    // Fire start bell if bells are empty OR if it contains 0
+    final bells = _profile.bellAtSeconds;
+    if (bells.isEmpty) {
+      if (!_isPaused && !_firedBells.contains(0)) {
+        _ringBell();
+        _firedBells.add(0);
+      }
+    } else {
+      if (!_isPaused && bells.contains(0) && !_firedBells.contains(0)) {
+        _ringBell();
+        _firedBells.add(0);
+      }
     }
 
     _timerStartDateTime = DateTime.now();
@@ -167,7 +170,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     setState(() {
       _isRunning = true;
       _isPaused = false;
-      _remainingNotifier.value = _remaining;
+      _elapsedNotifier.value = _elapsedSeconds;
     });
 
     WakelockPlus.enable();
@@ -175,31 +178,22 @@ class _SecondsScreenState extends State<SecondsScreen>
     _tickTimer?.cancel();
     _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       if (!mounted) return;
-      
+
       final diff = DateTime.now().difference(_timerStartDateTime!).inSeconds;
       final newElapsed = _elapsedAtStart + diff;
 
       if (newElapsed != _elapsedSeconds) {
         setState(() {
           _elapsedSeconds = newElapsed;
-          _remainingNotifier.value = _remaining;
+          _elapsedNotifier.value = _elapsedSeconds;
         });
 
-        if (_profile.bellAtSeconds.contains(_elapsedSeconds) &&
-            !_firedBells.contains(_elapsedSeconds)) {
-          _ringBell(); // fire-and-forget
-          _firedBells.add(_elapsedSeconds);
-        }
-
-        if (_elapsedSeconds >= _profile.durationSeconds) {
-          _tickTimer?.cancel();
-          setState(() {
-            _isRunning = false;
-            _isPaused = false;
-          });
-          WakelockPlus.disable();
-          _unlockScreen();
-          _onComplete();
+        if (bells.isNotEmpty) {
+          if (bells.contains(_elapsedSeconds) &&
+              !_firedBells.contains(_elapsedSeconds)) {
+            _ringBell(); // fire-and-forget
+            _firedBells.add(_elapsedSeconds);
+          }
         }
       }
     });
@@ -214,7 +208,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     setState(() {
       _isRunning = false;
       _isPaused = true;
-      _remainingNotifier.value = _remaining;
+      _elapsedNotifier.value = _elapsedSeconds;
     });
     WakelockPlus.disable();
   }
@@ -229,7 +223,7 @@ class _SecondsScreenState extends State<SecondsScreen>
       _bellCount = 0;
       _timerStartDateTime = null;
       _elapsedAtStart = 0;
-      _remainingNotifier.value = _profile.durationSeconds;
+      _elapsedNotifier.value = 0;
     });
     WakelockPlus.disable();
     _unlockScreen();
@@ -242,7 +236,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     _lockOverlayEntry = OverlayEntry(
       builder: (context) {
         return _LockOverlay(
-          remainingNotifier: _remainingNotifier,
+          elapsedNotifier: _elapsedNotifier,
           isLockedNotifier: _isLockedNotifier,
           breathAnim: _breathAnim,
           onUnlock: _unlockScreen,
@@ -299,8 +293,10 @@ class _SecondsScreenState extends State<SecondsScreen>
               Navigator.pop(context);
               _reset();
             },
-            child: const Text('Close',
-                style: TextStyle(color: Colors.deepPurpleAccent)),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Colors.deepPurpleAccent),
+            ),
           ),
         ],
       ),
@@ -339,8 +335,9 @@ class _SecondsScreenState extends State<SecondsScreen>
                 child: IgnorePointer(
                   child: Container(
                     color: Colors.white.withOpacity(
-                        (_bellFlashAnim.value * (1 - _bellFlashAnim.value) * 4)
-                            .clamp(0.0, 0.12)),
+                      (_bellFlashAnim.value * (1 - _bellFlashAnim.value) * 4)
+                          .clamp(0.0, 0.12),
+                    ),
                   ),
                 ),
               ),
@@ -370,9 +367,14 @@ class _SecondsScreenState extends State<SecondsScreen>
               ),
               const SizedBox(height: 2),
               Text(
-                _profile.durationLabel,
+                _profile.bellAtSeconds.isEmpty
+                    ? 'No bells (starts with bell)'
+                    : '${_profile.bellAtSeconds.length} bell${_profile.bellAtSeconds.length != 1 ? 's' : ''}',
                 style: const TextStyle(
-                    fontSize: 12, color: Colors.white38, letterSpacing: 1.2),
+                  fontSize: 12,
+                  color: Colors.white38,
+                  letterSpacing: 1.2,
+                ),
               ),
               const SizedBox(height: 28),
 
@@ -386,25 +388,29 @@ class _SecondsScreenState extends State<SecondsScreen>
                 duration: const Duration(milliseconds: 400),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 18, vertical: 8),
+                    horizontal: 18,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.deepPurple.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                        color: Colors.deepPurple.withOpacity(0.3)),
+                      color: Colors.deepPurple.withOpacity(0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('🔔',
-                          style: TextStyle(fontSize: 13)),
+                      const Text('🔔', style: TextStyle(fontSize: 13)),
                       const SizedBox(width: 6),
                       Text(
                         nb != null
                             ? 'Next bell in ${_fmt(nb - _elapsedSeconds)}'
                             : ' ',
                         style: const TextStyle(
-                            fontSize: 12, color: Colors.white54),
+                          fontSize: 12,
+                          color: Colors.white54,
+                        ),
                       ),
                     ],
                   ),
@@ -445,8 +451,7 @@ class _SecondsScreenState extends State<SecondsScreen>
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               margin: const EdgeInsets.only(right: 8),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: active
@@ -462,11 +467,8 @@ class _SecondsScreenState extends State<SecondsScreen>
                 widget.profiles[i].name,
                 style: TextStyle(
                   fontSize: 13,
-                  color: active
-                      ? Colors.deepPurpleAccent
-                      : Colors.white38,
-                  fontWeight:
-                      active ? FontWeight.bold : FontWeight.normal,
+                  color: active ? Colors.deepPurpleAccent : Colors.white38,
+                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ),
@@ -517,8 +519,11 @@ class _SecondsScreenState extends State<SecondsScreen>
                   painter: _ArcPainter(
                     progress: _progress,
                     color: _isRunning
-                        ? Color.lerp(Colors.deepPurpleAccent,
-                            Colors.cyanAccent, _breathAnim.value)!
+                        ? Color.lerp(
+                            Colors.deepPurpleAccent,
+                            Colors.cyanAccent,
+                            _breathAnim.value,
+                          )!
                         : Colors.deepPurpleAccent.withOpacity(0.55),
                   ),
                 ),
@@ -527,7 +532,7 @@ class _SecondsScreenState extends State<SecondsScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      _fmt(_remaining),
+                      _fmt(_elapsedSeconds),
                       style: const TextStyle(
                         fontSize: 44,
                         fontWeight: FontWeight.w200,
@@ -538,10 +543,10 @@ class _SecondsScreenState extends State<SecondsScreen>
                     const SizedBox(height: 4),
                     Text(
                       _isRunning
-                          ? (_breathAnim.value > 0.5 ? 'exhale' : 'inhale')
+                          ? 'breath and witness'
                           : _isPaused
-                              ? 'paused'
-                              : 'ready',
+                          ? 'paused'
+                          : 'ready',
                       style: TextStyle(
                         fontSize: 11,
                         letterSpacing: 2,
@@ -599,9 +604,7 @@ class _SecondsScreenState extends State<SecondsScreen>
               ],
             ),
             child: Icon(
-              _isRunning
-                  ? Icons.pause_rounded
-                  : Icons.play_arrow_rounded,
+              _isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
               color: Colors.white,
               size: 36,
             ),
@@ -652,87 +655,97 @@ class _SecondsScreenState extends State<SecondsScreen>
           const SizedBox(height: 14),
 
           // Timeline bar with bell markers
-          LayoutBuilder(builder: (ctx, box) {
-            final trackW = box.maxWidth;
-            return SizedBox(
-              height: 28,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Track
-                  Positioned(
-                    top: 12,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.white12,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  // Progress fill
-                  Positioned(
-                    top: 12,
-                    left: 0,
-                    width: trackW * _progress,
-                    child: Container(
-                      height: 4,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Colors.deepPurpleAccent,
-                            Colors.cyanAccent
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  // Bell dots
-                  ..._profile.bellAtSeconds.map((b) {
-                    final frac = _profile.durationSeconds > 0
-                        ? b / _profile.durationSeconds
-                        : 0.0;
-                    final x =
-                        (frac * trackW - 7).clamp(0.0, trackW - 14);
-                    final fired = _firedBells.contains(b);
-                    return Positioned(
-                      top: 6,
-                      left: x,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 400),
-                        width: 16,
-                        height: 16,
+          LayoutBuilder(
+            builder: (ctx, box) {
+              final trackW = box.maxWidth;
+              final maxBellTime = _profile.bellAtSeconds.isNotEmpty
+                  ? _profile.bellAtSeconds.last
+                  : 0;
+              final double timelineDuration = maxBellTime > 0
+                  ? maxBellTime.toDouble()
+                  : 60.0;
+              final double timelineProgress =
+                  (_elapsedSeconds / timelineDuration).clamp(0.0, 1.0);
+
+              return SizedBox(
+                height: 28,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Track
+                    Positioned(
+                      top: 12,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 4,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: fired
-                              ? Colors.deepPurpleAccent
-                              : Colors.black54,
-                          border: Border.all(
+                          color: Colors.white12,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    // Progress fill
+                    Positioned(
+                      top: 12,
+                      left: 0,
+                      width: trackW * timelineProgress,
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Colors.deepPurpleAccent,
+                              Colors.cyanAccent,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    // Bell dots
+                    ..._profile.bellAtSeconds.map((b) {
+                      final frac = timelineDuration > 0
+                          ? b / timelineDuration
+                          : 0.0;
+                      final x = (frac * trackW - 7).clamp(0.0, trackW - 14);
+                      final fired = _firedBells.contains(b);
+                      return Positioned(
+                        top: 6,
+                        left: x,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
                             color: fired
                                 ? Colors.deepPurpleAccent
-                                : Colors.white38,
-                            width: 1.5,
+                                : Colors.black54,
+                            border: Border.all(
+                              color: fired
+                                  ? Colors.deepPurpleAccent
+                                  : Colors.white38,
+                              width: 1.5,
+                            ),
+                            boxShadow: fired
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.deepPurpleAccent
+                                          .withOpacity(0.55),
+                                      blurRadius: 8,
+                                    ),
+                                  ]
+                                : null,
                           ),
-                          boxShadow: fired
-                              ? [
-                                  BoxShadow(
-                                    color: Colors.deepPurpleAccent
-                                        .withOpacity(0.55),
-                                    blurRadius: 8,
-                                  )
-                                ]
-                              : null,
                         ),
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            );
-          }),
+                      );
+                    }),
+                  ],
+                ),
+              );
+            },
+          ),
 
           const SizedBox(height: 14),
 
@@ -744,7 +757,9 @@ class _SecondsScreenState extends State<SecondsScreen>
               final fired = _firedBells.contains(b);
               return Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 4),
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: fired
@@ -762,20 +777,17 @@ class _SecondsScreenState extends State<SecondsScreen>
                     Text(
                       '🔔',
                       style: TextStyle(
-                          fontSize: 11,
-                          color: fired ? null : const Color(0x44FFFFFF)),
+                        fontSize: 11,
+                        color: fired ? null : const Color(0x44FFFFFF),
+                      ),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       _fmt(b),
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: fired
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: fired
-                            ? Colors.deepPurpleAccent
-                            : Colors.white38,
+                        fontWeight: fired ? FontWeight.bold : FontWeight.normal,
+                        color: fired ? Colors.deepPurpleAccent : Colors.white38,
                       ),
                     ),
                   ],
@@ -798,8 +810,11 @@ class _CircleBtn extends StatelessWidget {
   final Color color;
   final VoidCallback? onTap;
 
-  const _CircleBtn(
-      {required this.icon, required this.color, required this.onTap});
+  const _CircleBtn({
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -868,13 +883,13 @@ class _ArcPainter extends CustomPainter {
 }
 
 class _LockOverlay extends StatelessWidget {
-  final ValueNotifier<int> remainingNotifier;
+  final ValueNotifier<int> elapsedNotifier;
   final ValueNotifier<bool> isLockedNotifier;
   final Animation<double> breathAnim;
   final VoidCallback onUnlock;
 
   const _LockOverlay({
-    required this.remainingNotifier,
+    required this.elapsedNotifier,
     required this.isLockedNotifier,
     required this.breathAnim,
     required this.onUnlock,
@@ -945,10 +960,10 @@ class _LockOverlay extends StatelessWidget {
 
                       // Ticking time display
                       ValueListenableBuilder<int>(
-                        valueListenable: remainingNotifier,
-                        builder: (context, remaining, _) {
+                        valueListenable: elapsedNotifier,
+                        builder: (context, elapsed, _) {
                           return Text(
-                            _fmt(remaining),
+                            _fmt(elapsed),
                             style: TextStyle(
                               fontSize: 56,
                               fontWeight: FontWeight.w100,
@@ -965,7 +980,7 @@ class _LockOverlay extends StatelessWidget {
                         animation: breathAnim,
                         builder: (context, child) {
                           return Text(
-                            breathAnim.value > 0.5 ? 'exhale' : 'inhale',
+                            'breath and witness',
                             style: TextStyle(
                               fontSize: 12,
                               letterSpacing: 2,

@@ -45,3 +45,18 @@ if [ -d "$APK_DIR" ]; then
 else
     echo "⚠️ Warning: Output directory not found. Please check build logs."
 fi
+
+echo "============================================="
+echo " 🎉 Deploying APK to HOST..."
+echo "============================================="
+
+tgt_dir="/var/www/the-time-app"
+scp build/app/outputs/apk/release/app-release.apk ve:"$tgt_dir"/"app-release-$(date '+%-d-%B-%Y-%Hh%Mm%S' | tr '[:upper:]' '[:lower:]').apk" || {
+	echo "Error" >&2
+	exit 1
+}
+
+echo "============================================="
+echo " 🎉 Deploy completed successfully!"
+echo "============================================="
+

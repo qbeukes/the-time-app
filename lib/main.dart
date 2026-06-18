@@ -65,7 +65,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   // ── Seconds / profiles ────────────────────────────────────────
   late List<TimerProfile> _profiles;
-  int _activeProfileIndex = 0;
+  int _activeProfileIndex = 1;
 
   @override
   void initState() {
@@ -755,9 +755,9 @@ class _ProfileListTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${profile.durationLabel}  •  '
-                    '${profile.bellAtSeconds.length} bell'
-                    '${profile.bellAtSeconds.length != 1 ? 's' : ''}',
+                    profile.bellAtSeconds.isEmpty
+                        ? 'No bells (starts with bell)'
+                        : '${profile.bellAtSeconds.length} bell${profile.bellAtSeconds.length != 1 ? 's' : ''}',
                     style: const TextStyle(fontSize: 11, color: Colors.white38),
                   ),
                 ],
@@ -805,8 +805,6 @@ class _ProfileEditorDialog extends StatefulWidget {
 
 class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
   late TextEditingController _nameCtrl;
-  late TextEditingController _minCtrl;
-  late TextEditingController _secCtrl;
   late List<int> _bells; // mutable list of bell times
 
   // Bell adder
@@ -818,26 +816,15 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
     super.initState();
     final p = widget.profile;
     _nameCtrl = TextEditingController(text: p?.name ?? '');
-    final dur = p?.durationSeconds ?? 300;
-    _minCtrl = TextEditingController(text: '${dur ~/ 60}');
-    _secCtrl = TextEditingController(text: '${dur % 60}');
-    _bells = p != null ? List<int>.from(p.bellAtSeconds) : [0, dur];
+    _bells = p != null ? List<int>.from(p.bellAtSeconds) : [];
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _minCtrl.dispose();
-    _secCtrl.dispose();
     _bellMinCtrl.dispose();
     _bellSecCtrl.dispose();
     super.dispose();
-  }
-
-  int get _durationSecs {
-    final m = int.tryParse(_minCtrl.text) ?? 5;
-    final s = int.tryParse(_secCtrl.text) ?? 0;
-    return (m * 60 + s).clamp(1, 99 * 60);
   }
 
   String _fmt(int secs) {
@@ -872,7 +859,6 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
           widget.profile?.id ??
           DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
-      durationSeconds: _durationSecs,
       bellAtSeconds: _bells,
     );
     Navigator.pop(context, p);
@@ -914,40 +900,6 @@ class _ProfileEditorDialogState extends State<_ProfileEditorDialog> {
               decoration: _inputDecor('e.g. Morning Sit'),
             ),
             const SizedBox(height: 20),
-
-            // Duration
-            const _Label('DURATION'),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _minCtrl,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: _inputDecor('min'),
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    ':',
-                    style: TextStyle(fontSize: 20, color: Colors.white54),
-                  ),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _secCtrl,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: _inputDecor('sec'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
 
             // Bell times
             Row(
