@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../models/timer_profile.dart';
 
 class SecondsScreen extends StatefulWidget {
@@ -22,12 +23,21 @@ class SecondsScreen extends StatefulWidget {
 }
 
 class _SecondsScreenState extends State<SecondsScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   int _elapsedSeconds = 0;
   bool _isRunning = false;
   bool _isPaused = false;
   Timer? _tickTimer;
   final Set<int> _firedBells = {};
+
+  // Wall-clock tracking variables
+  DateTime? _timerStartDateTime;
+  int _elapsedAtStart = 0;
+
+  // Lock overlay state
+  OverlayEntry? _lockOverlayEntry;
+  final ValueNotifier<int> _remainingNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<bool> _isLockedNotifier = ValueNotifier<bool>(false);
 
   // Bell cycling: bell1 → bell2 → bell3 → bell1 → …
   int _bellCount = 0;
@@ -57,6 +67,7 @@ class _SecondsScreenState extends State<SecondsScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     _pulseCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1100))
@@ -87,12 +98,55 @@ class _SecondsScreenState extends State<SecondsScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (_isRunning && _timerStartDateTime != null) {
+        final diff = DateTime.now().difference(_timerStartDateTime!).inSeconds;
+        final newElapsed = _elapsedAtStart + diff;
+
+        bool missedBell = false;
+        for (int s = _elapsedSeconds + 1; s <= newElapsed; s++) {
+          if (_profile.bellAtSeconds.contains(s) && !_firedBells.contains(s)) {
+            missedBell = true;
+            _firedBells.add(s);
+          }
+        }
+
+        setState(() {
+          _elapsedSeconds = newElapsed;
+          _remainingNotifier.value = _remaining;
+        });
+
+        if (missedBell) {
+          _ringBell();
+        }
+
+        if (_elapsedSeconds >= _profile.durationSeconds) {
+          _tickTimer?.cancel();
+          setState(() {
+            _isRunning = false;
+            _isPaused = false;
+          });
+          WakelockPlus.disable();
+          _unlockScreen();
+          _onComplete();
+        }
+      }
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tickTimer?.cancel();
     _audioPlayer.dispose();
     _pulseCtrl.dispose();
     _breathCtrl.dispose();
     _bellFlashCtrl.dispose();
+    WakelockPlus.disable();
+    _unlockScreen();
+    _remainingNotifier.dispose();
+    _isLockedNotifier.dispose();
     super.dispose();
   }
 
@@ -107,39 +161,62 @@ class _SecondsScreenState extends State<SecondsScreen>
       _firedBells.add(0);
     }
 
+    _timerStartDateTime = DateTime.now();
+    _elapsedAtStart = _elapsedSeconds;
+
     setState(() {
       _isRunning = true;
       _isPaused = false;
+      _remainingNotifier.value = _remaining;
     });
 
+    WakelockPlus.enable();
+
     _tickTimer?.cancel();
-    _tickTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
       if (!mounted) return;
-      setState(() => _elapsedSeconds++);
+      
+      final diff = DateTime.now().difference(_timerStartDateTime!).inSeconds;
+      final newElapsed = _elapsedAtStart + diff;
 
-      if (_profile.bellAtSeconds.contains(_elapsedSeconds) &&
-          !_firedBells.contains(_elapsedSeconds)) {
-        _ringBell(); // fire-and-forget
-        _firedBells.add(_elapsedSeconds);
-      }
-
-      if (_elapsedSeconds >= _profile.durationSeconds) {
-        _tickTimer?.cancel();
+      if (newElapsed != _elapsedSeconds) {
         setState(() {
-          _isRunning = false;
-          _isPaused = false;
+          _elapsedSeconds = newElapsed;
+          _remainingNotifier.value = _remaining;
         });
-        _onComplete();
+
+        if (_profile.bellAtSeconds.contains(_elapsedSeconds) &&
+            !_firedBells.contains(_elapsedSeconds)) {
+          _ringBell(); // fire-and-forget
+          _firedBells.add(_elapsedSeconds);
+        }
+
+        if (_elapsedSeconds >= _profile.durationSeconds) {
+          _tickTimer?.cancel();
+          setState(() {
+            _isRunning = false;
+            _isPaused = false;
+          });
+          WakelockPlus.disable();
+          _unlockScreen();
+          _onComplete();
+        }
       }
     });
   }
 
   void _pause() {
     _tickTimer?.cancel();
+    if (_timerStartDateTime != null) {
+      final diff = DateTime.now().difference(_timerStartDateTime!).inSeconds;
+      _elapsedSeconds = _elapsedAtStart + diff;
+    }
     setState(() {
       _isRunning = false;
       _isPaused = true;
+      _remainingNotifier.value = _remaining;
     });
+    WakelockPlus.disable();
   }
 
   void _reset() {
@@ -150,7 +227,36 @@ class _SecondsScreenState extends State<SecondsScreen>
       _isPaused = false;
       _firedBells.clear();
       _bellCount = 0;
+      _timerStartDateTime = null;
+      _elapsedAtStart = 0;
+      _remainingNotifier.value = _profile.durationSeconds;
     });
+    WakelockPlus.disable();
+    _unlockScreen();
+  }
+
+  void _lockScreen() {
+    if (_lockOverlayEntry != null) return;
+
+    _isLockedNotifier.value = true;
+    _lockOverlayEntry = OverlayEntry(
+      builder: (context) {
+        return _LockOverlay(
+          remainingNotifier: _remainingNotifier,
+          isLockedNotifier: _isLockedNotifier,
+          breathAnim: _breathAnim,
+          onUnlock: _unlockScreen,
+        );
+      },
+    );
+    Overlay.of(context).insert(_lockOverlayEntry!);
+  }
+
+  void _unlockScreen() {
+    if (_lockOverlayEntry == null) return;
+    _isLockedNotifier.value = false;
+    _lockOverlayEntry?.remove();
+    _lockOverlayEntry = null;
   }
 
   Future<void> _ringBell() async {
@@ -507,6 +613,12 @@ class _SecondsScreenState extends State<SecondsScreen>
           color: Colors.redAccent.withOpacity(0.55),
           onTap: (_isRunning || _isPaused) ? _reset : null,
         ),
+        const SizedBox(width: 20),
+        _CircleBtn(
+          icon: Icons.lock_outline_rounded,
+          color: Colors.tealAccent.withOpacity(0.65),
+          onTap: (_isRunning || _isPaused) ? _lockScreen : null,
+        ),
       ],
     );
   }
@@ -753,4 +865,138 @@ class _ArcPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ArcPainter old) =>
       old.progress != progress || old.color != color;
+}
+
+class _LockOverlay extends StatelessWidget {
+  final ValueNotifier<int> remainingNotifier;
+  final ValueNotifier<bool> isLockedNotifier;
+  final Animation<double> breathAnim;
+  final VoidCallback onUnlock;
+
+  const _LockOverlay({
+    required this.remainingNotifier,
+    required this.isLockedNotifier,
+    required this.breathAnim,
+    required this.onUnlock,
+  });
+
+  String _fmt(int secs) {
+    if (secs < 0) secs = 0;
+    return '${(secs ~/ 60).toString().padLeft(2, '0')}:'
+        '${(secs % 60).toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black, // True black OLED screen
+      child: PopScope(
+        canPop: false, // Prevent physical back button from popping
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // Breathing glow effect
+              Positioned.fill(
+                child: AnimatedBuilder(
+                  animation: breathAnim,
+                  builder: (context, child) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.center,
+                          radius: 1.0,
+                          colors: [
+                            Color.lerp(
+                              Colors.deepPurple.withOpacity(0.06),
+                              Colors.cyan.withOpacity(0.12),
+                              breathAnim.value,
+                            )!,
+                            Colors.black,
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // UI Content
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onDoubleTap: onUnlock,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Padlock icon
+                      AnimatedBuilder(
+                        animation: breathAnim,
+                        builder: (context, child) {
+                          return Icon(
+                            Icons.lock_outline_rounded,
+                            color: Colors.white.withOpacity(
+                              0.15 + (breathAnim.value * 0.1),
+                            ),
+                            size: 32,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Ticking time display
+                      ValueListenableBuilder<int>(
+                        valueListenable: remainingNotifier,
+                        builder: (context, remaining, _) {
+                          return Text(
+                            _fmt(remaining),
+                            style: TextStyle(
+                              fontSize: 56,
+                              fontWeight: FontWeight.w100,
+                              color: Colors.white.withOpacity(0.35),
+                              letterSpacing: 4,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Breath guide
+                      AnimatedBuilder(
+                        animation: breathAnim,
+                        builder: (context, child) {
+                          return Text(
+                            breathAnim.value > 0.5 ? 'exhale' : 'inhale',
+                            style: TextStyle(
+                              fontSize: 12,
+                              letterSpacing: 2,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.white.withOpacity(
+                                0.15 + (breathAnim.value * 0.15),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 120),
+
+                      // Unlock instruction
+                      Text(
+                        'Double-tap to unlock',
+                        style: TextStyle(
+                          fontSize: 11,
+                          letterSpacing: 1.5,
+                          color: Colors.white.withOpacity(0.12),
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
