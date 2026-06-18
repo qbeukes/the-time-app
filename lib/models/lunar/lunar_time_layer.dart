@@ -1,37 +1,21 @@
+import 'package:the_time_app/models/lunar/lunar_time_unit.dart';
 import '../time_layer.dart';
 
-/// Lunar time layer.
+/// Base class for all lunar time layers.
+///
+/// Requires a [LunarTimeUnit] as its moment — all time-related
+/// decisions are delegated to the unit's Jean Meeus calculations.
 abstract class LunarTimeLayer extends TimeLayer {
-  const LunarTimeLayer(super.moment);
+  const LunarTimeLayer(LunarTimeUnit super.moment);
 
-  DateTime getLunarEpoch();
+  /// The [LunarTimeUnit] powering this layer.
+  LunarTimeUnit get unit => moment as LunarTimeUnit;
 
-  double get moonAge {
-    final daysSinceFirstMoon = _dateSinceLunarEpoch();
-    const lunarCycleLength = 29.53059;
-    return daysSinceFirstMoon % lunarCycleLength;
-  }
+  /// Fractional days since the most recent full moon (Meeus accuracy).
+  double get moonAge => unit.moonAge;
 
-  int get moonNumber {
-    final daysSinceLunarEpoch = _dateSinceLunarEpoch();
-    const lunarCycleLength = 29.53059;
-    return (daysSinceLunarEpoch / lunarCycleLength).floor() + 1;
-  }
-
-  double _dateSinceLunarEpoch() {
-    return _secondsSinceLunarEpoch() / 86400.0;
-  }
-
-  int _secondsSinceLunarEpoch() {
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(
-      moment.epochMilliseconds,
-      isUtc: true,
-    );
-
-    final lunarEpoch = getLunarEpoch();
-
-    return dateTime.difference(lunarEpoch).inSeconds;
-  }
+  /// Sequential full-moon number from the 12TRA reference epoch.
+  int get moonNumber => unit.moonNumber;
 
   @override
   String toDisplayValue() {

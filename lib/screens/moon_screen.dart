@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
 import 'package:the_time_app/models/lunar/new_moon_based_layer.dart';
 import 'package:the_time_app/models/lunar/luach/luach_layer.dart';
-import 'package:the_time_app/models/lunar/lunar_moment.dart';
+import 'package:the_time_app/models/lunar/lunar_time_unit.dart';
+import 'package:the_time_app/models/moment.dart';
 import 'package:the_time_app/models/tra/tra_layer.dart';
 import 'package:the_time_app/models/tra/tra_archetype.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
@@ -33,7 +34,7 @@ class MoonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moment = LunarMoment(date.millisecondsSinceEpoch);
+    final moment = LunarTimeUnit.fromDateTime(date);
     final illumination = SunCalc.getMoonIllumination(date);
     final currentPhase = illumination['phase']?.toDouble() ?? 0.0;
     final fraction = illumination['fraction']?.toDouble() ?? 0.0;
@@ -99,7 +100,7 @@ class MoonScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMoonBaseCard(BuildContext context, LunarMoment moment) {
+  Widget _buildMoonBaseCard(BuildContext context, Moment moment) {
     const amberColor = Color(0xFFFFC107);
     const blueColor = Color(0xFF42A5F5);
 
@@ -221,7 +222,7 @@ class MoonScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        moment.toDisplayValue(FullMoonBasedLayer.new),
+                        moment.toDisplayValue((m) => FullMoonBasedLayer(m as LunarTimeUnit)),
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -269,7 +270,7 @@ class MoonScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        moment.toDisplayValue(NewMoonBasedLayer.new),
+                        moment.toDisplayValue((m) => NewMoonBasedLayer(m as LunarTimeUnit)),
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -725,6 +726,82 @@ class MoonScreen extends StatelessWidget {
             ),
 
             const Divider(height: 24, color: Colors.white24),
+
+            // Macro Phase Section
+            Builder(builder: (context) {
+              const phaseNames = ['East', 'South', 'West', 'North'];
+              final phaseIdx = luach.macroPhaseIndex;
+              final progress = luach.macroPhaseProgress;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'MACRO PHASE: ${phaseNames[phaseIdx].toUpperCase()}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                          color: Colors.white54,
+                        ),
+                      ),
+                      Text(
+                        '${(progress * 100).toStringAsFixed(0)}% Progress',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: archetype.color.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: List.generate(4, (index) {
+                      final isCurrent = index == phaseIdx;
+                      final isPast = index < phaseIdx;
+                      double segmentVal = 0.0;
+                      if (isPast) {
+                        segmentVal = 1.0;
+                      } else if (isCurrent) {
+                        segmentVal = progress;
+                      }
+                      return Expanded(
+                        child: Container(
+                          height: 6,
+                          margin: EdgeInsets.only(
+                            left: index == 0 ? 0.0 : 4.0,
+                            right: index == 3 ? 0.0 : 4.0,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3),
+                            color: Colors.white10,
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: FractionallySizedBox(
+                            alignment: Alignment.centerLeft,
+                            widthFactor: segmentVal,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    archetype.color,
+                                    archetype.secondaryColor,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              );
+            }),
 
             // Meaning Sections
             const Text(
