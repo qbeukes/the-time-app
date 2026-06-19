@@ -67,6 +67,16 @@ class GregorianSolarTime extends SolarTime {
   /// Formatted date string "Wednesday, 17 June 2026"
   String get formattedDate => '$weekdayName, $day $monthName $year';
 
+  /// Formatted timezone offset and timezone abbreviation (e.g. "UTC+02:00 (SAST)")
+  String get timeZoneHeader {
+    final offset = _dateTime.timeZoneOffset;
+    final hours = offset.inHours.abs().toString().padLeft(2, '0');
+    final minutes = (offset.inMinutes.abs() % 60).toString().padLeft(2, '0');
+    final sign = offset.isNegative ? '-' : '+';
+    final tzName = _dateTime.timeZoneName;
+    return 'UTC$sign$hours:$minutes ($tzName)';
+  }
+
   @override
   String toDisplayValue() {
     return '$formattedDate — $formattedTime';

@@ -150,18 +150,10 @@ class _SecondsScreenState extends State<SecondsScreen>
   // ── Timer logic ───────────────────────────────────────────────
 
   void _start() {
-    // Fire start bell if bells are empty OR if it contains 0
-    final bells = _profile.bellAtSeconds;
-    if (bells.isEmpty) {
-      if (!_isPaused && !_firedBells.contains(0)) {
-        _ringBell();
-        _firedBells.add(0);
-      }
-    } else {
-      if (!_isPaused && bells.contains(0) && !_firedBells.contains(0)) {
-        _ringBell();
-        _firedBells.add(0);
-      }
+    // Fire implicit start bell at 0 seconds if not paused and 0 has not fired yet
+    if (!_isPaused && !_firedBells.contains(0)) {
+      _ringBell(asset: 'sounds/bell1.wav');
+      _firedBells.add(0);
     }
 
     _timerStartDateTime = DateTime.now();
@@ -174,6 +166,8 @@ class _SecondsScreenState extends State<SecondsScreen>
     });
 
     WakelockPlus.enable();
+
+    final bells = _profile.bellAtSeconds;
 
     _tickTimer?.cancel();
     _tickTimer = Timer.periodic(const Duration(milliseconds: 200), (_) {
@@ -253,17 +247,19 @@ class _SecondsScreenState extends State<SecondsScreen>
     _lockOverlayEntry = null;
   }
 
-  Future<void> _ringBell() async {
+  Future<void> _ringBell({String? asset}) async {
     HapticFeedback.mediumImpact();
     _bellFlashCtrl.forward(from: 0.0).then((_) => _bellFlashCtrl.reverse());
 
     // Cycle through bell1 → bell2 → bell3 → bell1 → …
-    final asset = _bellAssets[_bellCount % _bellAssets.length];
-    _bellCount++;
+    final selectedAsset = asset ?? _bellAssets[_bellCount % _bellAssets.length];
+    if (asset == null) {
+      _bellCount++;
+    }
 
     try {
       await _audioPlayer.stop();
-      await _audioPlayer.play(AssetSource(asset));
+      await _audioPlayer.play(AssetSource(selectedAsset));
     } catch (_) {
       // Gracefully ignore audio errors (e.g. unsupported platform)
     }
@@ -312,7 +308,8 @@ class _SecondsScreenState extends State<SecondsScreen>
   }
 
   int? get _nextBell {
-    for (final b in _profile.bellAtSeconds) {
+    final scheduledBells = _profile.bellAtSeconds;
+    for (final b in scheduledBells) {
       if (b > _elapsedSeconds) return b;
     }
     return null;
@@ -366,15 +363,22 @@ class _SecondsScreenState extends State<SecondsScreen>
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
-                _profile.bellAtSeconds.isEmpty
-                    ? 'No bells (starts with bell)'
-                    : '${_profile.bellAtSeconds.length} bell${_profile.bellAtSeconds.length != 1 ? 's' : ''}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.white38,
-                  letterSpacing: 1.2,
-                ),
+              Builder(
+                builder: (context) {
+                  final count = _profile.bellAtSeconds
+                      .where((b) => b > 0)
+                      .length;
+                  return Text(
+                    count == 0
+                        ? 'No bells (starts with bell)'
+                        : '$count bell${count != 1 ? 's' : ''}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white38,
+                      letterSpacing: 1.2,
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 28),
 
@@ -543,7 +547,7 @@ class _SecondsScreenState extends State<SecondsScreen>
                     const SizedBox(height: 4),
                     Text(
                       _isRunning
-                          ? 'breath and witness'
+                          ? 'witness and breathe'
                           : _isPaused
                           ? 'paused'
                           : 'ready',
@@ -630,7 +634,8 @@ class _SecondsScreenState extends State<SecondsScreen>
   // Bell schedule card
   // ─────────────────────────────────────────────────────────────
   Widget _buildBellSchedule() {
-    if (_profile.bellAtSeconds.isEmpty) return const SizedBox.shrink();
+    final displayBells = _profile.bellAtSeconds;
+    if (displayBells.isEmpty) return const SizedBox.shrink();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -658,8 +663,8 @@ class _SecondsScreenState extends State<SecondsScreen>
           LayoutBuilder(
             builder: (ctx, box) {
               final trackW = box.maxWidth;
-              final maxBellTime = _profile.bellAtSeconds.isNotEmpty
-                  ? _profile.bellAtSeconds.last
+              final maxBellTime = displayBells.isNotEmpty
+                  ? displayBells.last
                   : 0;
               final double timelineDuration = maxBellTime > 0
                   ? maxBellTime.toDouble()
@@ -704,7 +709,7 @@ class _SecondsScreenState extends State<SecondsScreen>
                       ),
                     ),
                     // Bell dots
-                    ..._profile.bellAtSeconds.map((b) {
+                    ...displayBells.map((b) {
                       final frac = timelineDuration > 0
                           ? b / timelineDuration
                           : 0.0;
@@ -753,7 +758,7 @@ class _SecondsScreenState extends State<SecondsScreen>
           Wrap(
             spacing: 10,
             runSpacing: 6,
-            children: _profile.bellAtSeconds.map((b) {
+            children: displayBells.map((b) {
               final fired = _firedBells.contains(b);
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -980,7 +985,7 @@ class _LockOverlay extends StatelessWidget {
                         animation: breathAnim,
                         builder: (context, child) {
                           return Text(
-                            'breath and witness',
+                            'witness and breathe',
                             style: TextStyle(
                               fontSize: 12,
                               letterSpacing: 2,

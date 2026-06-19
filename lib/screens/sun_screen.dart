@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/moment.dart';
 import '../models/solar/gregorian_solar_time.dart';
 import '../models/solar/enochian_solar_time.dart';
 
-class SunScreen extends StatefulWidget {
+class SunScreen extends StatelessWidget {
   final DateTime date;
   final bool showGregorian;
   final bool showEnochian;
@@ -19,36 +18,11 @@ class SunScreen extends StatefulWidget {
   });
 
   @override
-  State<SunScreen> createState() => _SunScreenState();
-}
-
-class _SunScreenState extends State<SunScreen> {
-  late Timer _clockTimer;
-  DateTime _now = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() => _now = DateTime.now());
-    });
-  }
-
-  @override
-  void dispose() {
-    _clockTimer.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Use the live clock for the Gregorian card
-    final gregorian = GregorianSolarTime(Moment(_now.millisecondsSinceEpoch));
-
-    // Use the navigable date for the Enochian card (date-only, no time element)
-    final enochian = EnochianSolarTime(
-      Moment(widget.date.millisecondsSinceEpoch),
-    );
+    // Use the navigable date for Gregorian and Enochian cards
+    final moment = Moment(date.millisecondsSinceEpoch);
+    final gregorian = GregorianSolarTime(moment);
+    final enochian = EnochianSolarTime(moment);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -67,19 +41,19 @@ class _SunScreenState extends State<SunScreen> {
               const SizedBox(height: 20),
 
               // ── localTime Card ───────────────────────
-              if (widget.showLocalTime) ...[
+              if (showLocalTime) ...[
                 _buildLocalTimeCard(gregorian),
                 const SizedBox(height: 16),
               ],
 
               // ── Gregorian Card ──────────────────────────────────
-              if (widget.showGregorian) ...[
+              if (showGregorian) ...[
                 _buildGregorianCard(gregorian),
                 const SizedBox(height: 16),
               ],
 
               // ── Enochian Card ───────────────────────────────────
-              if (widget.showEnochian) ...[
+              if (showEnochian) ...[
                 _buildEnochianCard(enochian),
                 const SizedBox(height: 16),
               ],
@@ -147,7 +121,7 @@ class _SunScreenState extends State<SunScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'LOCAL TIME',
+                        'Time of Day',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -156,9 +130,9 @@ class _SunScreenState extends State<SunScreen> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
-                        'Local Time',
-                        style: TextStyle(
+                      Text(
+                        greg.timeZoneHeader,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

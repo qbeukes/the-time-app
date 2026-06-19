@@ -12,24 +12,21 @@ class TimerProfile {
     required this.bellAtSeconds,
   });
 
-  TimerProfile copyWith({
-    String? id,
-    String? name,
-    List<int>? bellAtSeconds,
-  }) {
+  TimerProfile copyWith({String? id, String? name, List<int>? bellAtSeconds}) {
     return TimerProfile(
       id: id ?? this.id,
       name: name ?? this.name,
-      bellAtSeconds:
-          bellAtSeconds != null ? List<int>.from(bellAtSeconds) : List<int>.from(this.bellAtSeconds),
+      bellAtSeconds: bellAtSeconds != null
+          ? List<int>.from(bellAtSeconds)
+          : List<int>.from(this.bellAtSeconds),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'bellAtSeconds': bellAtSeconds,
-      };
+    'id': id,
+    'name': name,
+    'bellAtSeconds': bellAtSeconds,
+  };
 
   factory TimerProfile.fromJson(Map<String, dynamic> json) {
     return TimerProfile(
@@ -40,20 +37,16 @@ class TimerProfile {
   }
 
   static List<TimerProfile> get defaults => [
-        TimerProfile(
-          id: 'default_open',
-          name: 'Open Space',
-          bellAtSeconds: [],
-        ),
-        TimerProfile(
-          id: 'default_intervals',
-          name: '5 Min Interval',
-          bellAtSeconds: [0, 300, 600, 900],
-        ),
-        TimerProfile(
-          id: 'default_zen',
-          name: 'Zen Sit',
-          bellAtSeconds: [0, 60, 180, 300, 600],
-        ),
-      ];
+    TimerProfile(id: 'default_open', name: 'Open Space', bellAtSeconds: []),
+    TimerProfile(
+      id: 'default_intervals',
+      name: '5 Min Interval',
+      bellAtSeconds: [300, 600, 900],
+    ),
+    TimerProfile(
+      id: 'default_zen',
+      name: 'Zen Sit',
+      bellAtSeconds: [60, 180, 360, 900],
+    ),
+  ];
 }

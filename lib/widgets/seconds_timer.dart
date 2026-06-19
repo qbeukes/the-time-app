@@ -328,7 +328,7 @@ class _SecondsTimerState extends State<SecondsTimer>
                             ),
                             if (_isRunning)
                               Text(
-                                'breath and witness',
+                                'witness and breathe',
                                 style: TextStyle(
                                   fontSize: 11,
                                   letterSpacing: 1.5,

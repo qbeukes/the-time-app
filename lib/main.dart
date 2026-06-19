@@ -306,6 +306,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           });
           _savePrefs();
         },
+        onResetDefaults: () {
+          setState(() {
+            _profiles = TimerProfile.defaults;
+            _activeProfileIndex = 0;
+          });
+          _savePrefs();
+        },
       ),
     );
   }
@@ -352,7 +359,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: (_currentIndex == 0 && !_isLive)
+            leading: ((_currentIndex == 0 || _currentIndex == 1) && !_isLive)
                 ? IconButton(
                     icon: const Icon(
                       Icons.play_arrow_rounded,
@@ -615,6 +622,7 @@ class _SecondsMenuSheet extends StatefulWidget {
   final ValueChanged<TimerProfile> onAddProfile;
   final void Function(int index, TimerProfile profile) onUpdateProfile;
   final ValueChanged<int> onDeleteProfile;
+  final VoidCallback onResetDefaults;
 
   const _SecondsMenuSheet({
     required this.profiles,
@@ -623,6 +631,7 @@ class _SecondsMenuSheet extends StatefulWidget {
     required this.onAddProfile,
     required this.onUpdateProfile,
     required this.onDeleteProfile,
+    required this.onResetDefaults,
   });
 
   @override
@@ -667,6 +676,47 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
     });
   }
 
+  void _resetToDefaults() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF12121E),
+        title: const Text(
+          'Reset Profiles?',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'This will reset all profiles to default settings. Custom changes will be lost.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white38),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Reset',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      widget.onResetDefaults();
+      setState(() {
+        _profiles = TimerProfile.defaults;
+        _activeIndex = 0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -686,6 +736,19 @@ class _SecondsMenuSheetState extends State<_SecondsMenuSheet> {
               children: [
                 const Text('⏳  TIMER PROFILES', style: _sheetTitleStyle),
                 const Spacer(),
+                TextButton.icon(
+                  onPressed: _resetToDefaults,
+                  icon: const Icon(Icons.restore_rounded, size: 18),
+                  label: const Text('Reset'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.redAccent,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 TextButton.icon(
                   onPressed: () => _openEditor(),
                   icon: const Icon(Icons.add_rounded, size: 18),
