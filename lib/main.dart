@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_preview/device_preview.dart';
@@ -52,6 +53,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   double? _latitude;
   double? _longitude;
 
+  // Ticking time variables
+  Timer? _tickingTimer;
+  bool _isLive = true;
+
   // ── Moon toggles ──────────────────────────────────────────────
   bool _moonShowTra = true;
   bool _moonShowLuach = true;
@@ -74,6 +79,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _profiles = TimerProfile.defaults;
     _initLocation();
     _loadPrefs();
+    _startTicking();
+  }
+
+  void _startTicking() {
+    _tickingTimer?.cancel();
+    _tickingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isLive) {
+        _globalMomentNotifier.value = DateTime.now();
+      }
+    });
   }
 
   Future<void> _loadPrefs() async {
@@ -153,6 +168,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   void dispose() {
+    _tickingTimer?.cancel();
     _globalMomentNotifier.dispose();
     super.dispose();
   }
@@ -164,7 +180,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
-    if (picked != null) _globalMomentNotifier.value = picked;
+    if (picked != null) {
+      _globalMomentNotifier.value = picked;
+      if (_isLive) {
+        setState(() {
+          _isLive = false;
+        });
+      }
+    }
   }
 
   void _handleHorizontalDragUpdate(DragUpdateDetails details) {
@@ -176,6 +199,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _globalMomentNotifier.value = _globalMomentNotifier.value.add(
         Duration(milliseconds: deltaMs),
       );
+      if (_isLive) {
+        setState(() {
+          _isLive = false;
+        });
+      }
     }
   }
 
@@ -324,6 +352,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
+            leading: (_currentIndex == 0 && !_isLive)
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.cyanAccent,
+                      size: 28,
+                    ),
+                    tooltip: 'Resume Live Time',
+                    onPressed: () {
+                      setState(() {
+                        _isLive = true;
+                        _globalMomentNotifier.value = DateTime.now();
+                      });
+                    },
+                  )
+                : null,
             actions: [
               if (_currentIndex != 2)
                 IconButton(
