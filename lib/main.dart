@@ -109,6 +109,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _sunShowEnochian = prefs.getBool('sunShowEnochian')!;
         if (prefs.containsKey('sunShowLocalTime'))
           _sunShowLocalTime = prefs.getBool('sunShowLocalTime')!;
+        if (prefs.containsKey('currentIndex'))
+          _currentIndex = prefs.getInt('currentIndex')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
 
@@ -135,6 +137,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('sunShowGregorian', _sunShowGregorian);
       await prefs.setBool('sunShowEnochian', _sunShowEnochian);
       await prefs.setBool('sunShowLocalTime', _sunShowLocalTime);
+      await prefs.setInt('currentIndex', _currentIndex);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
@@ -398,7 +401,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
-            onTap: (i) => setState(() => _currentIndex = i),
+            onTap: (i) {
+              setState(() => _currentIndex = i);
+              _savePrefs();
+            },
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.nightlight_round),

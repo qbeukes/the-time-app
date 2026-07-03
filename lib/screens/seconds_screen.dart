@@ -47,6 +47,7 @@ class _SecondsScreenState extends State<SecondsScreen>
     'sounds/bell3.wav',
   ];
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final List<AudioPlayer> _preloadPlayers = [];
 
   late AnimationController _pulseCtrl;
   late AnimationController _breathCtrl;
@@ -90,6 +91,18 @@ class _SecondsScreenState extends State<SecondsScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _bellFlashCtrl, curve: Curves.easeOut));
+
+    _preloadSounds();
+  }
+
+  Future<void> _preloadSounds() async {
+    for (final asset in _bellAssets) {
+      try {
+        final p = AudioPlayer();
+        await p.setSource(AssetSource(asset));
+        _preloadPlayers.add(p);
+      } catch (_) {}
+    }
   }
 
   @override
@@ -137,6 +150,9 @@ class _SecondsScreenState extends State<SecondsScreen>
     WidgetsBinding.instance.removeObserver(this);
     _tickTimer?.cancel();
     _audioPlayer.dispose();
+    for (final p in _preloadPlayers) {
+      p.dispose();
+    }
     _pulseCtrl.dispose();
     _breathCtrl.dispose();
     _bellFlashCtrl.dispose();
@@ -384,7 +400,7 @@ class _SecondsScreenState extends State<SecondsScreen>
 
               // ── Circular timer ────────────────────────────────
               _buildCircularTimer(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               // ── Next bell pill ────────────────────────────────
               AnimatedOpacity(
@@ -420,11 +436,15 @@ class _SecondsScreenState extends State<SecondsScreen>
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 16),
 
               // ── Controls ──────────────────────────────────────
               _buildControls(),
-              const SizedBox(height: 36),
+              const SizedBox(height: 24),
+
+              // ── Bell test ─────────────────────────────────────
+              _buildBellTest(),
+              const SizedBox(height: 20),
 
               // ── Bell schedule ─────────────────────────────────
               _buildBellSchedule(),
@@ -631,6 +651,15 @@ class _SecondsScreenState extends State<SecondsScreen>
   }
 
   // ─────────────────────────────────────────────────────────────
+  // Bell test
+  // ─────────────────────────────────────────────────────────────
+  Widget _buildBellTest() {
+    return _BellTestButton(
+      onTap: () => _ringBell(asset: 'sounds/bell1.wav'),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
   // Bell schedule card
   // ─────────────────────────────────────────────────────────────
   Widget _buildBellSchedule() {
@@ -809,6 +838,74 @@ class _SecondsScreenState extends State<SecondsScreen>
 // ─────────────────────────────────────────────────────────────
 // Small helpers
 // ─────────────────────────────────────────────────────────────
+
+class _BellTestButton extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _BellTestButton({required this.onTap});
+
+  @override
+  State<_BellTestButton> createState() => _BellTestButtonState();
+}
+
+class _BellTestButtonState extends State<_BellTestButton> {
+  bool _pressed = false;
+
+  void _handleTap() {
+    setState(() => _pressed = true);
+    widget.onTap();
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) setState(() => _pressed = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _handleTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: _pressed
+              ? Colors.deepPurpleAccent.withOpacity(0.15)
+              : Colors.white.withOpacity(0.03),
+          border: Border.all(
+            color: _pressed
+                ? Colors.deepPurpleAccent.withOpacity(0.6)
+                : Colors.white.withOpacity(0.07),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 150),
+              style: TextStyle(
+                fontSize: _pressed ? 20 : 18,
+              ),
+              child: const Text('🔔'),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              'Test Bell',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 1,
+                color: _pressed
+                    ? Colors.deepPurpleAccent
+                    : Colors.white38,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _CircleBtn extends StatelessWidget {
   final IconData icon;

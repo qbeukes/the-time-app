@@ -40,12 +40,6 @@ class SunScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // ── localTime Card ───────────────────────
-              if (showLocalTime) ...[
-                _buildLocalTimeCard(gregorian),
-                const SizedBox(height: 16),
-              ],
-
               // ── Gregorian Card ──────────────────────────────────
               if (showGregorian) ...[
                 _buildGregorianCard(gregorian),
@@ -55,6 +49,12 @@ class SunScreen extends StatelessWidget {
               // ── Enochian Card ───────────────────────────────────
               if (showEnochian) ...[
                 _buildEnochianCard(enochian),
+                const SizedBox(height: 16),
+              ],
+
+              // ── localTime Card ───────────────────────
+              if (showLocalTime) ...[
+                _buildLocalTimeCard(gregorian),
                 const SizedBox(height: 16),
               ],
             ],
@@ -230,11 +230,19 @@ class SunScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        greg.formattedDate,
+                        '${greg.day} ${greg.monthName}, ${greg.year}',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        greg.weekdayName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white54,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
@@ -245,7 +253,62 @@ class SunScreen extends StatelessWidget {
 
             const Divider(height: 24, color: Colors.white24),
 
-            // Day of year progress
+            // ── Month progress ───────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${greg.day} ${greg.monthName}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: accentColor.withOpacity(0.9),
+                  ),
+                ),
+                Text(
+                  () {
+                    final daysInMonth = DateUtils.getDaysInMonth(greg.year, greg.month);
+                    return '${(greg.day / daysInMonth * 100).toStringAsFixed(1)}%';
+                  }(),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white54,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Month progress bar — day fraction within current month
+            Builder(builder: (context) {
+              final daysInMonth = DateUtils.getDaysInMonth(greg.year, greg.month);
+              final monthProgress = greg.day / daysInMonth;
+              return Container(
+                height: 6,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  color: Colors.white10,
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: monthProgress,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [accentColor, secondaryColor],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+
+            const SizedBox(height: 16),
+
+            // ── Year progress ────────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
