@@ -17,6 +17,91 @@ class SunScreen extends StatelessWidget {
     this.showLocalTime = true,
   });
 
+  // ═══════════════════════════════════════════════════════════════
+  // Shared progress bar helpers
+  // ═══════════════════════════════════════════════════════════════
+
+  /// A segmented progress bar with [segmentCount] sections.
+  ///
+  /// [currentIndex] is the 0-based index of the current segment.
+  /// [currentProgress] is the fill fraction (0–1) within the current segment.
+  /// [flexForSegment] optionally returns a flex value for each segment index;
+  /// when null every segment is equally sized.
+  Widget _buildSegmentedProgressBar({
+    required int segmentCount,
+    required int currentIndex,
+    required double currentProgress,
+    required Color accentColor,
+    required Color secondaryColor,
+    int Function(int index)? flexForSegment,
+    double gap = 1.5,
+  }) {
+    return Row(
+      children: List.generate(segmentCount, (index) {
+        final isPast = index < currentIndex;
+        final isCurrent = index == currentIndex;
+        double segmentVal = 0.0;
+        if (isPast) {
+          segmentVal = 1.0;
+        } else if (isCurrent) {
+          segmentVal = currentProgress;
+        }
+
+        return Expanded(
+          flex: flexForSegment?.call(index) ?? 1,
+          child: Container(
+            height: 6,
+            margin: EdgeInsets.only(
+              left: index == 0 ? 0.0 : gap,
+              right: index == segmentCount - 1 ? 0.0 : gap,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              color: Colors.white10,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: segmentVal,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [accentColor, secondaryColor],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  /// A single continuous progress bar filled to [progress] (0–1).
+  Widget _buildProgressBar({
+    required double progress,
+    required Color accentColor,
+    required Color secondaryColor,
+  }) {
+    return Container(
+      height: 6,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(3),
+        color: Colors.white10,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: progress,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [accentColor, secondaryColor]),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Use the navigable date for Gregorian and Enochian cards
@@ -258,53 +343,32 @@ class SunScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${greg.day} ${greg.monthName}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                    color: accentColor.withOpacity(0.9),
-                  ),
-                ),
-                Text(
-                  () {
-                    final daysInMonth = DateUtils.getDaysInMonth(greg.year, greg.month);
-                    return '${(greg.day / daysInMonth * 100).toStringAsFixed(1)}%';
-                  }(),
+                  'MONTH ${greg.month} OF 12',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
                     color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  'DAY ${greg.day} OF ${DateUtils.getDaysInMonth(greg.year, greg.month)}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor.withOpacity(0.9),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
 
-            // Month progress bar — day fraction within current month
-            Builder(builder: (context) {
-              final daysInMonth = DateUtils.getDaysInMonth(greg.year, greg.month);
-              final monthProgress = greg.day / daysInMonth;
-              return Container(
-                height: 6,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(3),
-                  color: Colors.white10,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: FractionallySizedBox(
-                  alignment: Alignment.centerLeft,
-                  widthFactor: monthProgress,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [accentColor, secondaryColor],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
+            // Month progress bar — smooth continuous
+            _buildProgressBar(
+              progress: greg.day / DateUtils.getDaysInMonth(greg.year, greg.month),
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
+            ),
 
             const SizedBox(height: 16),
 
@@ -334,47 +398,14 @@ class SunScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Year progress bar — 12 segments, one per month
-            Row(
-              children: List.generate(12, (index) {
-                final m = index + 1; // month 1–12
-                final daysInMonth = DateUtils.getDaysInMonth(greg.year, m);
-                final isPast = m < greg.month;
-                final isCurrent = m == greg.month;
-                double segmentVal = 0.0;
-
-                if (isPast) {
-                  segmentVal = 1.0;
-                } else if (isCurrent) {
-                  segmentVal = greg.day / daysInMonth;
-                }
-
-                return Expanded(
-                  flex: daysInMonth, // proportional to days in month
-                  child: Container(
-                    height: 6,
-                    margin: EdgeInsets.only(
-                      left: index == 0 ? 0.0 : 1.5,
-                      right: index == 11 ? 0.0 : 1.5,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      color: Colors.white10,
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: segmentVal,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [accentColor, secondaryColor],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
+            _buildSegmentedProgressBar(
+              segmentCount: 12,
+              currentIndex: greg.month - 1,
+              currentProgress:
+                  greg.day / DateUtils.getDaysInMonth(greg.year, greg.month),
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
+              flexForSegment: (i) => DateUtils.getDaysInMonth(greg.year, i + 1),
             ),
           ],
         ),
@@ -501,24 +532,10 @@ class SunScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Month progress bar
-            Container(
-              height: 6,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: Colors.white10,
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: enoch.monthProgress,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [accentColor, secondaryColor],
-                    ),
-                  ),
-                ),
-              ),
+            _buildProgressBar(
+              progress: enoch.monthProgress,
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
             ),
 
             const SizedBox(height: 16),
@@ -549,44 +566,13 @@ class SunScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Segmented year progress bar (13 segments for 13 months)
-            Row(
-              children: List.generate(13, (index) {
-                final isCurrent = index == enoch.enochianMonth - 1;
-                final isPast = index < enoch.enochianMonth - 1;
-                double segmentVal = 0.0;
-
-                if (isPast) {
-                  segmentVal = 1.0;
-                } else if (isCurrent) {
-                  segmentVal = enoch.monthProgress;
-                }
-
-                return Expanded(
-                  child: Container(
-                    height: 6,
-                    margin: EdgeInsets.only(
-                      left: index == 0 ? 0.0 : 2.0,
-                      right: index == 12 ? 0.0 : 2.0,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(3),
-                      color: Colors.white10,
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: segmentVal,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [accentColor, secondaryColor],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
+            _buildSegmentedProgressBar(
+              segmentCount: 13,
+              currentIndex: enoch.enochianMonth - 1,
+              currentProgress: enoch.monthProgress,
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
+              gap: 2.0,
             ),
           ],
         ),
@@ -743,24 +729,10 @@ class SunScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Full progress bar
-            Container(
-              height: 6,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(3),
-                color: Colors.white10,
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
-                widthFactor: 1.0,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [accentColor, secondaryColor],
-                    ),
-                  ),
-                ),
-              ),
+            _buildProgressBar(
+              progress: 1.0,
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
             ),
           ],
         ),
