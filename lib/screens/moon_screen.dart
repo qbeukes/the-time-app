@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
+import 'package:the_time_app/models/timeunit/lunar_time_unit.dart';
 import 'package:the_time_app/models/lunar/new_moon_based_layer.dart';
 import 'package:the_time_app/models/lunar/luach/luach_layer.dart';
-import 'package:the_time_app/models/lunar/lunar_time_unit.dart';
+import 'package:the_time_app/models/timeunit/lunar_time_unit_factory.dart';
 import 'package:the_time_app/models/moment.dart';
 import 'package:the_time_app/models/tra/tra_layer.dart';
 import 'package:the_time_app/models/tra/tra_archetype.dart';
@@ -12,6 +13,7 @@ import '../widgets/stylized_moon.dart';
 
 class MoonScreen extends StatelessWidget {
   final DateTime date;
+  final LunarTimeUnitFactory lunarFactory;
   final double? latitude;
   final double? longitude;
 
@@ -24,6 +26,7 @@ class MoonScreen extends StatelessWidget {
   const MoonScreen({
     super.key,
     required this.date,
+    required this.lunarFactory,
     this.latitude,
     this.longitude,
     this.showTra = true,
@@ -34,7 +37,7 @@ class MoonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moment = LunarTimeUnit.fromDateTime(date);
+    final moment = lunarFactory.fromDateTime(date);
     final illumination = SunCalc.getMoonIllumination(date);
     final currentPhase = illumination['phase']?.toDouble() ?? 0.0;
     final fraction = illumination['fraction']?.toDouble() ?? 0.0;

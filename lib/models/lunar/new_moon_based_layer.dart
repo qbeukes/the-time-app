@@ -1,4 +1,4 @@
-import 'package:the_time_app/models/lunar/lunar_time_unit.dart';
+import 'package:the_time_app/models/timeunit/lunar_time_unit.dart';
 import 'lunar_time_layer.dart';
 
 /// A lunar layer anchored to new moons.

@@ -9,6 +9,7 @@ import 'package:the_time_app/screens/moon_screen.dart';
 import 'package:the_time_app/screens/sun_screen.dart';
 import 'package:the_time_app/screens/seconds_screen.dart';
 import 'package:the_time_app/models/timer_profile.dart';
+import 'package:the_time_app/models/timeunit/lunar_time_unit_factory.dart';
 
 void main() {
   runApp(
@@ -50,6 +51,7 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 1;
   late final ValueNotifier<DateTime> _globalMomentNotifier;
+  late final LunarTimeUnitFactory _lunarFactory;
   double? _latitude;
   double? _longitude;
 
@@ -76,6 +78,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _globalMomentNotifier = ValueNotifier<DateTime>(DateTime.now());
+    _lunarFactory = const LunarTimeUnitFactory();
     _profiles = TimerProfile.defaults;
     _initLocation();
     _loadPrefs();
@@ -330,6 +333,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         final List<Widget> screens = [
           MoonScreen(
             date: globalDate,
+            lunarFactory: _lunarFactory,
             latitude: _latitude,
             longitude: _longitude,
             showTra: _moonShowTra,

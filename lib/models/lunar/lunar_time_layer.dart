@@ -1,4 +1,4 @@
-import 'package:the_time_app/models/lunar/lunar_time_unit.dart';
+import 'package:the_time_app/models/timeunit/lunar_time_unit.dart';
 import '../time_layer.dart';
 
 /// Base class for all lunar time layers.
@@ -15,7 +15,10 @@ abstract class LunarTimeLayer extends TimeLayer {
   double get moonAge => unit.moonAge;
 
   /// Sequential full-moon number from the 12TRA reference epoch.
-  int get moonNumber => unit.moonNumber;
+  int get moonNumber {
+    // 12TRA reference full moon (2017-07-09) has Meeus k-index 216
+    return (unit.fullMoonIndex - 216 + 1).clamp(1, 999999);
+  }
 
   @override
   String toDisplayValue() {
