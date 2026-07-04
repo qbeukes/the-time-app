@@ -363,11 +363,14 @@ class SunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Month progress bar — smooth continuous
-            _buildProgressBar(
-              progress: greg.day / DateUtils.getDaysInMonth(greg.year, greg.month),
+            // Month progress bar — segmented by days in month
+            _buildSegmentedProgressBar(
+              segmentCount: DateUtils.getDaysInMonth(greg.year, greg.month),
+              currentIndex: greg.day - 1,
+              currentProgress: 1.0,
               accentColor: accentColor,
               secondaryColor: secondaryColor,
+              gap: 1.0,
             ),
 
             const SizedBox(height: 16),
@@ -531,11 +534,14 @@ class SunScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Month progress bar
-            _buildProgressBar(
-              progress: enoch.monthProgress,
+            // Month progress bar — segmented by days in month
+            _buildSegmentedProgressBar(
+              segmentCount: 28,
+              currentIndex: enoch.enochianDay - 1,
+              currentProgress: 1.0,
               accentColor: accentColor,
               secondaryColor: secondaryColor,
+              gap: 1.0,
             ),
 
             const SizedBox(height: 16),
