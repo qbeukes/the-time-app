@@ -618,6 +618,14 @@ class MoonScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+                      if (luach.lunarYearType != null)
+                        Text(
+                          'Year of ${luach.lunarYearType}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
                     ],
                   ),
                 ),
