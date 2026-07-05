@@ -50,8 +50,13 @@ abstract class LunarTimeLayer extends TimeLayer {
     return 1;
   }
 
-  /// The Metonic cycle year (1–19).
-  int get traMetonicYear {
+  /// The mathematical year counting from J2000.
+  ///
+  /// This uses the Metonic cycle to calculate the exact year relative to
+  /// the J2000 epoch. The lunar year containing Jan 1, 2000 is Year 0.
+  int get traYear {
+    // 276 is the sequentialMoonNumber for 2022-04-17 (Start of Year 1 of a Metonic cycle)
+    int cyclesSince2022 = ((sequentialMoonNumber - 276) / 235).floor();
     int offset = (sequentialMoonNumber - 276) % 235;
     if (offset < 0) offset += 235;
 
@@ -61,11 +66,13 @@ abstract class LunarTimeLayer extends TimeLayer {
     for (int y = 1; y <= 19; y++) {
       int moonsThisYear = leapYears.contains(y) ? 13 : 12;
       if (offset < moonCount + moonsThisYear) {
-        return y;
+        // (cyclesSince2022 * 19) + y gives cycles relative to 2022-04-17 (which is Year 23 from J2000)
+        // Adding 22 shifts the anchor so that the J2000 epoch evaluates to exactly Year 0
+        return (cyclesSince2022 * 19) + y + 22;
       }
       moonCount += moonsThisYear;
     }
-    return 1;
+    return 23;
   }
 
   /// The moon's positional number (1–13) within the current Luach year.

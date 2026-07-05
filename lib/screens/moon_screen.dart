@@ -372,7 +372,7 @@ class MoonScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'YEAR ${tra.traMetonicYear} • MOON ${tra.traMonthInYear} • DAY ${tra.dayOfMoon + 1}',
+                        'YEAR ${tra.traYear} • MOON ${tra.traMonthInYear} • DAY ${tra.dayOfMoon + 1}',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white54,
@@ -602,7 +602,7 @@ class MoonScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'MOON ${luach.luachMoonNumberInYear} • DAY $dayNumber',
+                        'MOON ${luach.luachMoonNumberInYear} • DAY ${dayNumber + 1}',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white54,
