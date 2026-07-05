@@ -5,8 +5,8 @@ import 'lunar_time_layer.dart';
 ///
 /// [moonAge] here represents days since the previous **new** moon
 /// (overrides the full-moon default from [LunarTimeLayer]).
-class NewMoonBasedLayer extends LunarTimeLayer {
-  const NewMoonBasedLayer(LunarTimeUnit super.moment);
+class NewLunarAnchorLayer extends LunarTimeLayer {
+  const NewLunarAnchorLayer(LunarTimeUnit super.moment);
 
   /// Days since the previous new moon (0 at new moon).
   @override

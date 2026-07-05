@@ -62,12 +62,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // ── Moon toggles ──────────────────────────────────────────────
   bool _moonShowTra = true;
   bool _moonShowLuach = true;
-  bool _moonShowMoonBase = false;
+  bool _moonShowLunarAnchor = false;
   bool _moonUseLocalTilt = true;
 
   // ── Sun toggles ───────────────────────────────────────────────
   bool _sunShowGregorian = true;
   bool _sunShowEnochian = true;
+  bool _sunShowJulian = true;
   bool _sunShowLocalTime = true;
 
   // ── Seconds / profiles ────────────────────────────────────────
@@ -102,14 +103,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _moonShowTra = prefs.getBool('moonShowTra')!;
         if (prefs.containsKey('moonShowLuach'))
           _moonShowLuach = prefs.getBool('moonShowLuach')!;
-        if (prefs.containsKey('moonShowMoonBase'))
-          _moonShowMoonBase = prefs.getBool('moonShowMoonBase')!;
+        if (prefs.containsKey('moonShowLunarAnchor'))
+          _moonShowLunarAnchor = prefs.getBool('moonShowLunarAnchor')!;
         if (prefs.containsKey('moonUseLocalTilt'))
           _moonUseLocalTilt = prefs.getBool('moonUseLocalTilt')!;
         if (prefs.containsKey('sunShowGregorian'))
           _sunShowGregorian = prefs.getBool('sunShowGregorian')!;
         if (prefs.containsKey('sunShowEnochian'))
           _sunShowEnochian = prefs.getBool('sunShowEnochian')!;
+        if (prefs.containsKey('sunShowJulian'))
+          _sunShowJulian = prefs.getBool('sunShowJulian')!;
         if (prefs.containsKey('sunShowLocalTime'))
           _sunShowLocalTime = prefs.getBool('sunShowLocalTime')!;
         if (prefs.containsKey('currentIndex'))
@@ -135,10 +138,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('moonShowTra', _moonShowTra);
       await prefs.setBool('moonShowLuach', _moonShowLuach);
-      await prefs.setBool('moonShowMoonBase', _moonShowMoonBase);
+      await prefs.setBool('moonShowLunarAnchor', _moonShowLunarAnchor);
       await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
       await prefs.setBool('sunShowGregorian', _sunShowGregorian);
       await prefs.setBool('sunShowEnochian', _sunShowEnochian);
+      await prefs.setBool('sunShowJulian', _sunShowJulian);
       await prefs.setBool('sunShowLocalTime', _sunShowLocalTime);
       await prefs.setInt('currentIndex', _currentIndex);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
@@ -239,14 +243,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       builder: (_) => _MoonMenuSheet(
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
-        showMoonBase: _moonShowMoonBase,
+        showLunarAnchor: _moonShowLunarAnchor,
         useLocalTilt: _moonUseLocalTilt,
         hasLocation: _latitude != null && _longitude != null,
-        onChanged: (tra, luach, moonBase, tilt) {
+        onChanged: (tra, luach, lunarAnchor, tilt) {
           setState(() {
             _moonShowTra = tra;
             _moonShowLuach = luach;
-            _moonShowMoonBase = moonBase;
+            _moonShowLunarAnchor = lunarAnchor;
             _moonUseLocalTilt = tilt;
           });
           _savePrefs();
@@ -265,11 +269,13 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       builder: (_) => _SunMenuSheet(
         showGregorian: _sunShowGregorian,
         showEnochian: _sunShowEnochian,
+        showJulian: _sunShowJulian,
         showLocalTime: _sunShowLocalTime,
-        onChanged: (gregorian, enochian, localTime) {
+        onChanged: (gregorian, enochian, julian, localTime) {
           setState(() {
             _sunShowGregorian = gregorian;
             _sunShowEnochian = enochian;
+            _sunShowJulian = julian;
             _sunShowLocalTime = localTime;
           });
           _savePrefs();
@@ -338,13 +344,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             longitude: _longitude,
             showTra: _moonShowTra,
             showLuach: _moonShowLuach,
-            showMoonBase: _moonShowMoonBase,
+            showLunarAnchor: _moonShowLunarAnchor,
             useLocalTilt: _moonUseLocalTilt,
           ),
           SunScreen(
             date: globalDate,
             showGregorian: _sunShowGregorian,
             showEnochian: _sunShowEnochian,
+            showJulian: _sunShowJulian,
             showLocalTime: _sunShowLocalTime,
           ),
           SecondsScreen(
@@ -434,15 +441,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 class _MoonMenuSheet extends StatefulWidget {
   final bool showTra;
   final bool showLuach;
-  final bool showMoonBase;
+  final bool showLunarAnchor;
   final bool useLocalTilt;
   final bool hasLocation;
-  final void Function(bool tra, bool luach, bool moonBase, bool tilt) onChanged;
+  final void Function(bool tra, bool luach, bool lunarAnchor, bool tilt) onChanged;
 
   const _MoonMenuSheet({
     required this.showTra,
     required this.showLuach,
-    required this.showMoonBase,
+    required this.showLunarAnchor,
     required this.useLocalTilt,
     required this.hasLocation,
     required this.onChanged,
@@ -455,7 +462,7 @@ class _MoonMenuSheet extends StatefulWidget {
 class _MoonMenuSheetState extends State<_MoonMenuSheet> {
   late bool _tra;
   late bool _luach;
-  late bool _moonBase;
+  late bool _lunarAnchor;
   late bool _tilt;
 
   @override
@@ -463,11 +470,11 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
     super.initState();
     _tra = widget.showTra;
     _luach = widget.showLuach;
-    _moonBase = widget.showMoonBase;
+    _lunarAnchor = widget.showLunarAnchor;
     _tilt = widget.useLocalTilt;
   }
 
-  void _emit() => widget.onChanged(_tra, _luach, _moonBase, _tilt);
+  void _emit() => widget.onChanged(_tra, _luach, _lunarAnchor, _tilt);
 
   @override
   Widget build(BuildContext context) {
@@ -517,12 +524,12 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               ),
             _ToggleRow(
               label: 'Lunar Anchors',
-              subtitle: 'Full & New moon cycle bases',
+              subtitle: 'Full & New lunar anchors',
               icon: '🌕',
               iconColor: const Color(0xFFFFC107),
-              value: _moonBase,
+              value: _lunarAnchor,
               onChanged: (v) {
-                setState(() => _moonBase = v);
+                setState(() => _lunarAnchor = v);
                 _emit();
               },
             ),
@@ -540,12 +547,20 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
 class _SunMenuSheet extends StatefulWidget {
   final bool showGregorian;
   final bool showEnochian;
+  final bool showJulian;
   final bool showLocalTime;
-  final void Function(bool gregorian, bool enochian, bool localTime) onChanged;
+  final void Function(
+    bool gregorian,
+    bool enochian,
+    bool julian,
+    bool localTime,
+  )
+  onChanged;
 
   const _SunMenuSheet({
     required this.showGregorian,
     required this.showEnochian,
+    required this.showJulian,
     required this.showLocalTime,
     required this.onChanged,
   });
@@ -557,6 +572,7 @@ class _SunMenuSheet extends StatefulWidget {
 class _SunMenuSheetState extends State<_SunMenuSheet> {
   late bool _gregorian;
   late bool _enochian;
+  late bool _julian;
   late bool _localTime;
 
   @override
@@ -564,10 +580,11 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
     super.initState();
     _gregorian = widget.showGregorian;
     _enochian = widget.showEnochian;
+    _julian = widget.showJulian;
     _localTime = widget.showLocalTime;
   }
 
-  void _emit() => widget.onChanged(_gregorian, _enochian, _localTime);
+  void _emit() => widget.onChanged(_gregorian, _enochian, _julian, _localTime);
 
   @override
   Widget build(BuildContext context) {
@@ -582,17 +599,6 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
             const Text('☀️  SOLAR OPTIONS', style: _sheetTitleStyle),
             const SizedBox(height: 16),
             _ToggleRow(
-              label: 'Local Time',
-              subtitle: 'Ticking daily solar clock momentum',
-              icon: '⏰',
-              iconColor: const Color(0xFF00E5FF),
-              value: _localTime,
-              onChanged: (v) {
-                setState(() => _localTime = v);
-                _emit();
-              },
-            ),
-            _ToggleRow(
               label: 'Gregorian Calendar',
               subtitle: 'Standard solar date and month progress',
               icon: '☀️',
@@ -604,6 +610,17 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
               },
             ),
             _ToggleRow(
+              label: 'Julian Calendar',
+              subtitle: 'Old style 365-day solar tracking',
+              icon: '🏺',
+              iconColor: const Color(0xFF4CAF50),
+              value: _julian,
+              onChanged: (v) {
+                setState(() => _julian = v);
+                _emit();
+              },
+            ),
+            _ToggleRow(
               label: 'Enochian Calendar',
               subtitle: 'Pure 364-day grid and Days out of Time',
               icon: '✦',
@@ -611,6 +628,17 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
               value: _enochian,
               onChanged: (v) {
                 setState(() => _enochian = v);
+                _emit();
+              },
+            ),
+            _ToggleRow(
+              label: 'Local Time',
+              subtitle: 'Ticking daily solar clock momentum',
+              icon: '⏰',
+              iconColor: const Color(0xFF00E5FF),
+              value: _localTime,
+              onChanged: (v) {
+                setState(() => _localTime = v);
                 _emit();
               },
             ),

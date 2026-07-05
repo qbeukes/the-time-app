@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
+import 'package:the_time_app/models/lunar/full_lunar_anchor_layer.dart';
 import 'package:the_time_app/models/timeunit/lunar_time_unit.dart';
-import 'package:the_time_app/models/lunar/new_moon_based_layer.dart';
+import 'package:the_time_app/models/lunar/new_lunar_anchor_layer.dart';
 import 'package:the_time_app/models/lunar/luach/luach_layer.dart';
 import 'package:the_time_app/models/timeunit/lunar_time_unit_factory.dart';
 import 'package:the_time_app/models/moment.dart';
@@ -9,7 +9,6 @@ import 'package:the_time_app/models/tra/tra_layer.dart';
 import 'package:the_time_app/models/tra/tra_archetype.dart';
 import 'package:apsl_sun_calc/apsl_sun_calc.dart';
 import '../widgets/stylized_moon.dart';
-
 
 class MoonScreen extends StatelessWidget {
   final DateTime date;
@@ -20,7 +19,7 @@ class MoonScreen extends StatelessWidget {
   // Toggle flags — controlled by the burger menu in main.dart
   final bool showTra;
   final bool showLuach;
-  final bool showMoonBase;
+  final bool showLunarAnchor;
   final bool useLocalTilt;
 
   const MoonScreen({
@@ -31,7 +30,7 @@ class MoonScreen extends StatelessWidget {
     this.longitude,
     this.showTra = true,
     this.showLuach = true,
-    this.showMoonBase = true,
+    this.showLunarAnchor = true,
     this.useLocalTilt = true,
   });
 
@@ -89,9 +88,9 @@ class MoonScreen extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
-              // ── Moon Base Card ─────────────────────────────────────
-              if (showMoonBase) ...[
-                _buildMoonBaseCard(context, moment),
+              // ── Lunar Anchor Card ─────────────────────────────────────
+              if (showLunarAnchor) ...[
+                _buildLunarAnchorCard(context, moment),
                 const SizedBox(height: 16),
               ],
 
@@ -103,7 +102,7 @@ class MoonScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMoonBaseCard(BuildContext context, Moment moment) {
+  Widget _buildLunarAnchorCard(BuildContext context, Moment moment) {
     const amberColor = Color(0xFFFFC107);
     const blueColor = Color(0xFF42A5F5);
 
@@ -119,16 +118,9 @@ class MoonScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: const Color(0x55FFC107),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0x55FFC107), width: 1.5),
         boxShadow: const [
-          BoxShadow(
-            color: Color(0x26FFC107),
-            blurRadius: 24,
-            spreadRadius: -4,
-          ),
+          BoxShadow(color: Color(0x26FFC107), blurRadius: 24, spreadRadius: -4),
         ],
       ),
       child: Padding(
@@ -167,7 +159,7 @@ class MoonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'MOON CYCLE BASES',
+                        'LUNAR ANCHORS',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -177,7 +169,7 @@ class MoonScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 2),
                       Text(
-                        'Lunar Anchors',
+                        'Full & New',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -203,10 +195,15 @@ class MoonScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: amberColor.withOpacity(0.12),
                     border: Border.all(
-                        color: amberColor.withOpacity(0.4), width: 1.5),
+                      color: amberColor.withOpacity(0.4),
+                      width: 1.5,
+                    ),
                   ),
                   child: const Center(
-                    child: Text('○', style: TextStyle(fontSize: 16, color: amberColor)),
+                    child: Text(
+                      '○',
+                      style: TextStyle(fontSize: 16, color: amberColor),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -215,7 +212,7 @@ class MoonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'FULL MOON BASE',
+                        'FULL LUNAR ANCHOR',
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
@@ -225,7 +222,9 @@ class MoonScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        moment.toDisplayValue((m) => FullMoonBasedLayer(m as LunarTimeUnit)),
+                        moment.toDisplayValue(
+                          (m) => FullLunarAnchorLayer(m as LunarTimeUnit),
+                        ),
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -251,10 +250,15 @@ class MoonScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: blueColor.withOpacity(0.12),
                     border: Border.all(
-                        color: blueColor.withOpacity(0.4), width: 1.5),
+                      color: blueColor.withOpacity(0.4),
+                      width: 1.5,
+                    ),
                   ),
                   child: const Center(
-                    child: Text('●', style: TextStyle(fontSize: 14, color: blueColor)),
+                    child: Text(
+                      '●',
+                      style: TextStyle(fontSize: 14, color: blueColor),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -263,7 +267,7 @@ class MoonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'NEW MOON BASE',
+                        'NEW LUNAR ANCHOR',
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
@@ -273,7 +277,9 @@ class MoonScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        moment.toDisplayValue((m) => NewMoonBasedLayer(m as LunarTimeUnit)),
+                        moment.toDisplayValue(
+                          (m) => NewLunarAnchorLayer(m as LunarTimeUnit),
+                        ),
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
@@ -309,10 +315,7 @@ class MoonScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: monthly.color.withOpacity(0.35),
-          width: 1.5,
-        ),
+        border: Border.all(color: monthly.color.withOpacity(0.35), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: monthly.color.withOpacity(0.15),
@@ -350,10 +353,7 @@ class MoonScreen extends StatelessWidget {
                   child: Center(
                     child: Text(
                       monthly.symbol,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        color: Colors.white,
-                      ),
+                      style: const TextStyle(fontSize: 22, color: Colors.white),
                     ),
                   ),
                 ),
@@ -363,12 +363,20 @@ class MoonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '12TRA LUNAR RESONANCE [MOON ${tra.moonNumber}]',
+                        '12TRA LUNAR RESONANCE',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
                           color: monthly.color.withOpacity(0.85),
+                        ),
+                      ),
+                      Text(
+                        'MOON ${tra.moonNumber} • DAY ${tra.moonAge.floor() + 1}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white54,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -472,21 +480,22 @@ class MoonScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Text(
-                    daily.symbol,
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                  Text(daily.symbol, style: const TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(fontSize: 12, color: Colors.white70),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white70,
+                        ),
                         children: [
                           const TextSpan(
                             text: 'Daily Active Mode: ',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white54),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white54,
+                            ),
                           ),
                           TextSpan(
                             text: '${daily.name} — ',
@@ -574,10 +583,7 @@ class MoonScreen extends StatelessWidget {
                   child: const Center(
                     child: Text(
                       '🌙',
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.white,
-                      ),
+                      style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                   ),
                 ),
@@ -587,12 +593,20 @@ class MoonScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'LUACH LUNAR LAYER [MOON ${moon.moonNumberInYear} • DAY $dayNumber]',
+                        'LUACH LUNAR LAYER',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.5,
                           color: archetype.color.withOpacity(0.85),
+                        ),
+                      ),
+                      Text(
+                        'MOON ${moon.moonNumberInYear} • DAY $dayNumber',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white54,
+                          letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -617,7 +631,9 @@ class MoonScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 8),
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(12),
@@ -651,7 +667,9 @@ class MoonScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 8),
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black26,
                       borderRadius: BorderRadius.circular(12),
@@ -688,31 +706,29 @@ class MoonScreen extends StatelessWidget {
             // Gemstone Badge
             Container(
               width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: archetype.color.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: archetype.color.withOpacity(0.2)),
+                border: Border.all(color: archetype.color.withOpacity(0.2)),
               ),
               child: Row(
                 children: [
-                  const Text(
-                    '💎',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  const Text('💎', style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
                   RichText(
                     text: TextSpan(
                       style: const TextStyle(
-                          fontSize: 13, color: Colors.white70),
+                        fontSize: 13,
+                        color: Colors.white70,
+                      ),
                       children: [
                         const TextSpan(
                           text: 'Gemstone: ',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white54),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white54,
+                          ),
                         ),
                         TextSpan(
                           text: meta.gemstone,
@@ -731,80 +747,82 @@ class MoonScreen extends StatelessWidget {
             const Divider(height: 24, color: Colors.white24),
 
             // Macro Phase Section
-            Builder(builder: (context) {
-              const phaseNames = ['East', 'South', 'West', 'North'];
-              final phaseIdx = luach.macroPhaseIndex;
-              final progress = luach.macroPhaseProgress;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'MACRO PHASE: ${phaseNames[phaseIdx].toUpperCase()}',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                          color: Colors.white54,
-                        ),
-                      ),
-                      Text(
-                        '${(progress * 100).toStringAsFixed(0)}% Progress',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: archetype.color.withOpacity(0.9),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: List.generate(4, (index) {
-                      final isCurrent = index == phaseIdx;
-                      final isPast = index < phaseIdx;
-                      double segmentVal = 0.0;
-                      if (isPast) {
-                        segmentVal = 1.0;
-                      } else if (isCurrent) {
-                        segmentVal = progress;
-                      }
-                      return Expanded(
-                        child: Container(
-                          height: 6,
-                          margin: EdgeInsets.only(
-                            left: index == 0 ? 0.0 : 4.0,
-                            right: index == 3 ? 0.0 : 4.0,
+            Builder(
+              builder: (context) {
+                const phaseNames = ['East', 'South', 'West', 'North'];
+                final phaseIdx = luach.macroPhaseIndex;
+                final progress = luach.macroPhaseProgress;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'MACRO PHASE: ${phaseNames[phaseIdx].toUpperCase()}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                            color: Colors.white54,
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            color: Colors.white10,
+                        ),
+                        Text(
+                          '${(progress * 100).toStringAsFixed(0)}% Progress',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: archetype.color.withOpacity(0.9),
                           ),
-                          clipBehavior: Clip.antiAlias,
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: segmentVal,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    archetype.color,
-                                    archetype.secondaryColor,
-                                  ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: List.generate(4, (index) {
+                        final isCurrent = index == phaseIdx;
+                        final isPast = index < phaseIdx;
+                        double segmentVal = 0.0;
+                        if (isPast) {
+                          segmentVal = 1.0;
+                        } else if (isCurrent) {
+                          segmentVal = progress;
+                        }
+                        return Expanded(
+                          child: Container(
+                            height: 6,
+                            margin: EdgeInsets.only(
+                              left: index == 0 ? 0.0 : 4.0,
+                              right: index == 3 ? 0.0 : 4.0,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: Colors.white10,
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: FractionallySizedBox(
+                              alignment: Alignment.centerLeft,
+                              widthFactor: segmentVal,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      archetype.color,
+                                      archetype.secondaryColor,
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              );
-            }),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                );
+              },
+            ),
 
             // Meaning Sections
             const Text(
@@ -819,10 +837,7 @@ class MoonScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               meta.archetypalSummary,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 13, color: Colors.white70),
             ),
 
             const SizedBox(height: 16),
@@ -840,7 +855,9 @@ class MoonScreen extends StatelessWidget {
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 2),
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white10,
                     borderRadius: BorderRadius.circular(4),
@@ -859,10 +876,7 @@ class MoonScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               meta.traFunctionalSummary,
-              style: const TextStyle(
-                fontSize: 13,
-                color: Colors.white70,
-              ),
+              style: const TextStyle(fontSize: 13, color: Colors.white70),
             ),
 
             const Divider(height: 24, color: Colors.white24),

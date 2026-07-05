@@ -5,8 +5,8 @@ import 'lunar_time_layer.dart';
 ///
 /// [moonAge] measures days since the previous full moon (0 at full moon).
 /// [moonNumber] counts full moons from the 12TRA reference epoch.
-class FullMoonBasedLayer extends LunarTimeLayer {
-  const FullMoonBasedLayer(LunarTimeUnit super.moment);
+class FullLunarAnchorLayer extends LunarTimeLayer {
+  const FullLunarAnchorLayer(LunarTimeUnit super.moment);
 
   @override
   String toDisplayValue() {

@@ -1,9 +1,9 @@
-import 'package:the_time_app/models/lunar/full_moon_based_layer.dart';
+import 'package:the_time_app/models/lunar/full_lunar_anchor_layer.dart';
 import 'package:the_time_app/models/timeunit/lunar_time_unit.dart';
 import 'tra_archetype.dart';
 import 'tra_phase.dart';
 
-class TraLayer extends FullMoonBasedLayer {
+class TraLayer extends FullLunarAnchorLayer {
   const TraLayer(LunarTimeUnit super.moment);
 
   /// Gets the Monthly Archetype resonance based on the sequential moon number.

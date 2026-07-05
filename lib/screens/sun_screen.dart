@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import '../models/moment.dart';
 import '../models/solar/gregorian_solar_time.dart';
 import '../models/solar/enochian_solar_time.dart';
+import '../models/solar/julian_solar_time.dart';
 
 class SunScreen extends StatelessWidget {
   final DateTime date;
   final bool showGregorian;
   final bool showEnochian;
+  final bool showJulian;
   final bool showLocalTime;
 
   const SunScreen({
@@ -14,6 +16,7 @@ class SunScreen extends StatelessWidget {
     required this.date,
     this.showGregorian = true,
     this.showEnochian = true,
+    this.showJulian = true,
     this.showLocalTime = true,
   });
 
@@ -108,6 +111,7 @@ class SunScreen extends StatelessWidget {
     final moment = Moment(date.millisecondsSinceEpoch);
     final gregorian = GregorianSolarTime(moment);
     final enochian = EnochianSolarTime(moment);
+    final julian = JulianSolarTime(moment);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -128,6 +132,12 @@ class SunScreen extends StatelessWidget {
               // ── Gregorian Card ──────────────────────────────────
               if (showGregorian) ...[
                 _buildGregorianCard(gregorian),
+                const SizedBox(height: 16),
+              ],
+
+              // ── Julian Card ─────────────────────────────────────
+              if (showJulian) ...[
+                _buildJulianCard(julian),
                 const SizedBox(height: 16),
               ],
 
@@ -343,7 +353,7 @@ class SunScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'MONTH ${greg.month} OF 12',
+                  '${greg.monthName.toUpperCase()}, MONTH ${greg.month} OF 12',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -409,6 +419,177 @@ class SunScreen extends StatelessWidget {
               accentColor: accentColor,
               secondaryColor: secondaryColor,
               flexForSegment: (i) => DateUtils.getDaysInMonth(greg.year, i + 1),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // Julian Solar Calendar Card
+  // ═══════════════════════════════════════════════════════════════
+
+  Widget _buildJulianCard(JulianSolarTime julian) {
+    const accentColor = Color(0xFF4CAF50); // vibrant green
+    const secondaryColor = Color(0xFF81C784); // lighter green
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0x224CAF50), Color(0x0E81C784)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: const Color(0x554CAF50), width: 1.5),
+        boxShadow: const [
+          BoxShadow(color: Color(0x264CAF50), blurRadius: 24, spreadRadius: -4),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header row
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [accentColor, secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x664CAF50),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text('🏺', style: TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'JULIAN SOLAR CALENDAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: accentColor.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${julian.day} ${julian.monthName}, ${julian.year}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        julian.weekdayName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white54,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // ── Month progress ───────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${julian.monthName.toUpperCase()}, MONTH ${julian.month} OF 12',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  'DAY ${julian.day} OF ${DateUtils.getDaysInMonth(julian.year, julian.month)}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Month progress bar — segmented by days in month
+            _buildSegmentedProgressBar(
+              segmentCount: DateUtils.getDaysInMonth(julian.year, julian.month),
+              currentIndex: julian.day - 1,
+              currentProgress: 1.0,
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
+              gap: 1.0,
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Year progress ────────────────────────────────────
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'DAY ${julian.dayOfYear} OF ${julian.daysInYear}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                    color: Colors.white54,
+                  ),
+                ),
+                Text(
+                  '${(julian.dayOfYear / julian.daysInYear * 100).toStringAsFixed(1)}%',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: accentColor.withOpacity(0.9),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Year progress bar — 12 segments, one per month
+            _buildSegmentedProgressBar(
+              segmentCount: 12,
+              currentIndex: julian.month - 1,
+              currentProgress:
+                  julian.day /
+                  DateUtils.getDaysInMonth(julian.year, julian.month),
+              accentColor: accentColor,
+              secondaryColor: secondaryColor,
+              flexForSegment: (i) =>
+                  DateUtils.getDaysInMonth(julian.year, i + 1),
             ),
           ],
         ),
