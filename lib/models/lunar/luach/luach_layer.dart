@@ -26,10 +26,6 @@ class LuachLayer extends FullLunarAnchorLayer {
 
   // ─── Time via LunarTimeUnit ───────────────────────────────────────────────
 
-  /// Integer day within the current moon cycle, measured from the full moon
-  /// (Meeus accuracy) — matches the 12TRA reference point.
-  int get dayOfMoon => unit.moonAge.floor();
-
   /// Macro-phase index (0–3) within the current moon:
   ///   0 = East · 1 = South · 2 = West · 3 = North
   ///

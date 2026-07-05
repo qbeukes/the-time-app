@@ -4,7 +4,7 @@ import 'lunar_time_layer.dart';
 /// A lunar layer anchored to full moons.
 ///
 /// [moonAge] measures days since the previous full moon (0 at full moon).
-/// [moonNumber] counts full moons from the 12TRA reference epoch.
+/// [sequentialMoonNumber] counts full moons from Julian Day 0.
 class FullLunarAnchorLayer extends LunarTimeLayer {
   const FullLunarAnchorLayer(LunarTimeUnit super.moment);
 
@@ -12,7 +12,7 @@ class FullLunarAnchorLayer extends LunarTimeLayer {
   String toDisplayValue() {
     final prevFull = unit.previousFullMoon().dateTime;
     final nextFull = unit.nextFullMoon().dateTime;
-    return 'Moon Number: $moonNumber\n'
+    return 'Moon Number: $sequentialMoonNumber\n'
         'Moon Age: ${moonAge.toStringAsFixed(2)} days\n'
         'Prev Full: ${prevFull.toIso8601String().substring(0, 16)} UTC\n'
         'Next Full: ${nextFull.toIso8601String().substring(0, 16)} UTC';

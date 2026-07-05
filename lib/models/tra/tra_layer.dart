@@ -6,14 +6,14 @@ import 'tra_phase.dart';
 class TraLayer extends FullLunarAnchorLayer {
   const TraLayer(LunarTimeUnit super.moment);
 
-  /// Gets the Monthly Archetype resonance based on the sequential moon number.
+  /// Gets the Monthly Archetype resonance based on the pure 12-cycle.
   TraArchetype get monthlyArchetype {
-    return TraArchetype.fromNumber(moonNumber);
+    return TraArchetype.fromNumber(traMonthInYear);
   }
 
-  /// Gets the Daily Archetype resonance based on the current floor of the moon age.
+  /// Gets the Daily Archetype resonance based on the current day of the moon.
   TraArchetype get dailyArchetype {
-    return TraArchetype.fromNumber(moonAge.floor() + 1);
+    return TraArchetype.fromNumber(dayOfMoon + 1);
   }
 
   /// Gets the Macro Temporal Phase based on the moon age's progress through the synodic month.

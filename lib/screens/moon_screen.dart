@@ -372,7 +372,7 @@ class MoonScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'MOON ${tra.moonNumber} • DAY ${tra.moonAge.floor() + 1}',
+                        'YEAR ${tra.traMetonicYear} • MOON ${tra.traMonthInYear} • DAY ${tra.dayOfMoon + 1}',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white54,
@@ -528,7 +528,7 @@ class MoonScreen extends StatelessWidget {
     }
 
     // Correlate to 12TRA archetype by number for visual look and colors
-    final archetype = TraArchetype.fromNumber(moon.moonNumberInYear);
+    final archetype = TraArchetype.fromNumber(luach.luachMoonNumberInYear);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
@@ -602,7 +602,7 @@ class MoonScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'MOON ${moon.moonNumberInYear} • DAY $dayNumber',
+                        'MOON ${luach.luachMoonNumberInYear} • DAY $dayNumber',
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white54,
