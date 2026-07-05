@@ -757,7 +757,12 @@ class MoonScreen extends StatelessWidget {
             // Macro Phase Section
             Builder(
               builder: (context) {
-                const phaseNames = ['East', 'South', 'West', 'North'];
+                const phaseNames = [
+                  'East / Kuwahnim',
+                  'South / Wisdom',
+                  'West / ALhhim',
+                  'North / Bayinah Ct',
+                ];
                 final phaseIdx = luach.macroPhaseIndex;
                 final progress = luach.macroPhaseProgress;
                 return Column(
@@ -773,14 +778,6 @@ class MoonScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
                             color: Colors.white54,
-                          ),
-                        ),
-                        Text(
-                          '${(progress * 100).toStringAsFixed(0)}% Progress',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: archetype.color.withOpacity(0.9),
                           ),
                         ),
                       ],
