@@ -127,6 +127,13 @@ class SunScreen extends StatelessWidget {
                 height: 320,
                 fit: BoxFit.contain,
               ),
+
+              const SizedBox(height: 12),
+              Text(
+                'Date: ${date.toLocal().toString().split('.')[0]}',
+                style: const TextStyle(fontSize: 16, color: Colors.white70),
+              ),
+
               const SizedBox(height: 20),
 
               // ── Gregorian Card ──────────────────────────────────
@@ -146,112 +153,8 @@ class SunScreen extends StatelessWidget {
                 _buildEnochianCard(enochian),
                 const SizedBox(height: 16),
               ],
-
-              // ── localTime Card ───────────────────────
-              if (showLocalTime) ...[
-                _buildLocalTimeCard(gregorian),
-                const SizedBox(height: 16),
-              ],
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  // ═══════════════════════════════════════════════════════════════
-  // localTime Card (Daily Clock)
-  // ═══════════════════════════════════════════════════════════════
-
-  Widget _buildLocalTimeCard(GregorianSolarTime greg) {
-    const accentColor = Color(0xFF00E5FF); // neon cyan
-    const secondaryColor = Color(0xFF2979FF); // electric blue
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [Color(0x2200E5FF), Color(0x0E2979FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: const Color(0x5500E5FF), width: 1.5),
-        boxShadow: const [
-          BoxShadow(color: Color(0x2600E5FF), blurRadius: 24, spreadRadius: -4),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [accentColor, secondaryColor],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x6600E5FF),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text('⏰', style: TextStyle(fontSize: 22)),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Time of Day',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                          color: accentColor.withOpacity(0.85),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        greg.timeZoneHeader,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24, color: Colors.white24),
-            Center(
-              child: Text(
-                greg.formattedTime,
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w300,
-                  letterSpacing: 4,
-                  color: Colors.white,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -19,6 +19,7 @@ class MoonScreen extends StatelessWidget {
   // Toggle flags — controlled by the burger menu in main.dart
   final bool showTra;
   final bool showLuach;
+  final bool showLuachTraOverlap;
   final bool showLunarAnchor;
   final bool useLocalTilt;
 
@@ -30,6 +31,7 @@ class MoonScreen extends StatelessWidget {
     this.longitude,
     this.showTra = true,
     this.showLuach = true,
+    this.showLuachTraOverlap = true,
     this.showLunarAnchor = true,
     this.useLocalTilt = true,
   });
@@ -82,9 +84,15 @@ class MoonScreen extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
-              // ── Luach Card ────────────────────────────────────────────
+              // ── Luach Card (pure) ─────────────────────────────────────
               if (showLuach) ...[
                 _buildLuachCard(context, luachLayer),
+                const SizedBox(height: 16),
+              ],
+
+              // ── Luach/12TRA Overlap Card ────────────────────────────────
+              if (showLuachTraOverlap) ...[
+                _buildLuachTraOverlapCard(context, luachLayer),
                 const SizedBox(height: 16),
               ],
 
@@ -527,7 +535,7 @@ class MoonScreen extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    // Correlate to 12TRA archetype by number for visual look and colors
+    // Per-moon colors derived from the correlated archetype number
     final archetype = TraArchetype.fromNumber(luach.luachMoonNumberInYear);
 
     return Container(
@@ -542,10 +550,7 @@ class MoonScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: archetype.color.withOpacity(0.35),
-          width: 1.5,
-        ),
+        border: Border.all(color: archetype.color.withOpacity(0.35), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: archetype.color.withOpacity(0.15),
@@ -633,7 +638,7 @@ class MoonScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Structural Axes & Gemstone Row
+            // Direction & Gemstone Row
             Row(
               children: [
                 Expanded(
@@ -651,7 +656,7 @@ class MoonScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'LUACH DIRECTION (STRUCTURAL AXIS)',
+                          'STRUCTURAL AXIS',
                           style: TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
@@ -687,7 +692,7 @@ class MoonScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          '12TRA PHASE (PARALLEL AXIS)',
+                          'GEMSTONE',
                           style: TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.bold,
@@ -695,61 +700,27 @@ class MoonScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          meta.traPhase,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        Row(
+                          children: [
+                            const Text('💎', style: TextStyle(fontSize: 12)),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                meta.gemstone,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: archetype.color,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-
-            // Gemstone Badge
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: archetype.color.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: archetype.color.withOpacity(0.2)),
-              ),
-              child: Row(
-                children: [
-                  const Text('💎', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 8),
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white70,
-                      ),
-                      children: [
-                        const TextSpan(
-                          text: 'Gemstone: ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white54,
-                          ),
-                        ),
-                        TextSpan(
-                          text: meta.gemstone,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: archetype.color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             ),
 
             const Divider(height: 24, color: Colors.white24),
@@ -778,6 +749,14 @@ class MoonScreen extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
                             color: Colors.white54,
+                          ),
+                        ),
+                        Text(
+                          '${(progress * 100).toStringAsFixed(0)}%',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: archetype.color.withOpacity(0.9),
                           ),
                         ),
                       ],
@@ -811,10 +790,7 @@ class MoonScreen extends StatelessWidget {
                               child: Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [
-                                      archetype.color,
-                                      archetype.secondaryColor,
-                                    ],
+                                    colors: [archetype.color, archetype.secondaryColor],
                                   ),
                                 ),
                               ),
@@ -829,7 +805,7 @@ class MoonScreen extends StatelessWidget {
               },
             ),
 
-            // Meaning Sections
+            // Archetypal Meaning
             const Text(
               'LUACH ARCHETYPAL MEANING',
               style: TextStyle(
@@ -844,39 +820,229 @@ class MoonScreen extends StatelessWidget {
               meta.archetypalSummary,
               style: const TextStyle(fontSize: 13, color: Colors.white70),
             ),
+          ],
+        ),
+      ),
+    );
+  }
 
-            const SizedBox(height: 16),
+  // ── Luach/12TRA Overlap Card ──────────────────────────────────────
 
+  Widget _buildLuachTraOverlapCard(BuildContext context, LuachLayer luach) {
+    final moon = luach.currentMoon;
+    final meta = luach.currentMetadata;
+
+    if (moon == null || meta == null) {
+      return const SizedBox.shrink();
+    }
+
+    // Same per-moon archetype colors as the Luach card
+    final archetype = TraArchetype.fromNumber(luach.luachMoonNumberInYear);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: [
+            archetype.color.withOpacity(0.14),
+            archetype.secondaryColor.withOpacity(0.06),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: archetype.color.withOpacity(0.35), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: archetype.color.withOpacity(0.15),
+            blurRadius: 24,
+            spreadRadius: -4,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
             Row(
               children: [
-                const Text(
-                  '12TRA FUNCTIONAL MEANING ',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                    color: Colors.white38,
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [archetype.color, archetype.secondaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: archetype.color.withOpacity(0.4),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      archetype.symbol,
+                      style: const TextStyle(fontSize: 22, color: Colors.white),
+                    ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'LUACH / 12TRA OVERLAP',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: archetype.color.withOpacity(0.85),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Text(
+                            meta.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white10,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'NO. ${meta.number}',
+                              style: const TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white54,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '12TRA: ${archetype.name}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white10,
-                    borderRadius: BorderRadius.circular(4),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // TRA Phase & Archetype Row
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '12TRA PHASE',
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white38,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          meta.traPhase,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: archetype.color,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Text(
-                    'NO. ${meta.number} CORRELATION',
-                    style: const TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white54,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '12TRA ARCHETYPE',
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white38,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${archetype.symbol} ${meta.traArchetype}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: archetype.color,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
+            ),
+
+            const Divider(height: 24, color: Colors.white24),
+
+            // 12TRA Functional Meaning
+            const Text(
+              '12TRA FUNCTIONAL MEANING',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+                color: Colors.white38,
+              ),
             ),
             const SizedBox(height: 4),
             Text(

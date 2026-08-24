@@ -62,6 +62,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // ── Moon toggles ──────────────────────────────────────────────
   bool _moonShowTra = true;
   bool _moonShowLuach = true;
+  bool _moonShowLuachTraOverlap = true;
   bool _moonShowLunarAnchor = false;
   bool _moonUseLocalTilt = true;
 
@@ -103,6 +104,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _moonShowTra = prefs.getBool('moonShowTra')!;
         if (prefs.containsKey('moonShowLuach'))
           _moonShowLuach = prefs.getBool('moonShowLuach')!;
+        if (prefs.containsKey('moonShowLuachTraOverlap'))
+          _moonShowLuachTraOverlap = prefs.getBool('moonShowLuachTraOverlap')!;
         if (prefs.containsKey('moonShowLunarAnchor'))
           _moonShowLunarAnchor = prefs.getBool('moonShowLunarAnchor')!;
         if (prefs.containsKey('moonUseLocalTilt'))
@@ -138,6 +141,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('moonShowTra', _moonShowTra);
       await prefs.setBool('moonShowLuach', _moonShowLuach);
+      await prefs.setBool('moonShowLuachTraOverlap', _moonShowLuachTraOverlap);
       await prefs.setBool('moonShowLunarAnchor', _moonShowLunarAnchor);
       await prefs.setBool('moonUseLocalTilt', _moonUseLocalTilt);
       await prefs.setBool('sunShowGregorian', _sunShowGregorian);
@@ -243,13 +247,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       builder: (_) => _MoonMenuSheet(
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
+        showLuachTraOverlap: _moonShowLuachTraOverlap,
         showLunarAnchor: _moonShowLunarAnchor,
         useLocalTilt: _moonUseLocalTilt,
         hasLocation: _latitude != null && _longitude != null,
-        onChanged: (tra, luach, lunarAnchor, tilt) {
+        onChanged: (tra, luach, luachTraOverlap, lunarAnchor, tilt) {
           setState(() {
             _moonShowTra = tra;
             _moonShowLuach = luach;
+            _moonShowLuachTraOverlap = luachTraOverlap;
             _moonShowLunarAnchor = lunarAnchor;
             _moonUseLocalTilt = tilt;
           });
@@ -344,6 +350,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             longitude: _longitude,
             showTra: _moonShowTra,
             showLuach: _moonShowLuach,
+            showLuachTraOverlap: _moonShowLuachTraOverlap,
             showLunarAnchor: _moonShowLunarAnchor,
             useLocalTilt: _moonUseLocalTilt,
           ),
@@ -441,14 +448,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 class _MoonMenuSheet extends StatefulWidget {
   final bool showTra;
   final bool showLuach;
+  final bool showLuachTraOverlap;
   final bool showLunarAnchor;
   final bool useLocalTilt;
   final bool hasLocation;
-  final void Function(bool tra, bool luach, bool lunarAnchor, bool tilt) onChanged;
+  final void Function(bool tra, bool luach, bool luachTraOverlap, bool lunarAnchor, bool tilt) onChanged;
 
   const _MoonMenuSheet({
     required this.showTra,
     required this.showLuach,
+    required this.showLuachTraOverlap,
     required this.showLunarAnchor,
     required this.useLocalTilt,
     required this.hasLocation,
@@ -462,6 +471,7 @@ class _MoonMenuSheet extends StatefulWidget {
 class _MoonMenuSheetState extends State<_MoonMenuSheet> {
   late bool _tra;
   late bool _luach;
+  late bool _luachTraOverlap;
   late bool _lunarAnchor;
   late bool _tilt;
 
@@ -470,11 +480,12 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
     super.initState();
     _tra = widget.showTra;
     _luach = widget.showLuach;
+    _luachTraOverlap = widget.showLuachTraOverlap;
     _lunarAnchor = widget.showLunarAnchor;
     _tilt = widget.useLocalTilt;
   }
 
-  void _emit() => widget.onChanged(_tra, _luach, _lunarAnchor, _tilt);
+  void _emit() => widget.onChanged(_tra, _luach, _luachTraOverlap, _lunarAnchor, _tilt);
 
   @override
   Widget build(BuildContext context) {
@@ -507,6 +518,17 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
               value: _luach,
               onChanged: (v) {
                 setState(() => _luach = v);
+                _emit();
+              },
+            ),
+            _ToggleRow(
+              label: 'Luach/12TRA Overlap',
+              subtitle: 'Correlation between Luach and 12TRA',
+              icon: '🔗',
+              iconColor: const Color(0xFFB388FF),
+              value: _luachTraOverlap,
+              onChanged: (v) {
+                setState(() => _luachTraOverlap = v);
                 _emit();
               },
             ),
