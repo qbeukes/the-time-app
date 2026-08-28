@@ -570,3 +570,276 @@ a:not(.button):not(.brand-link):focus-visible {
     color: var(--link-copper-hover);
     text-decoration-color: var(--link-copper-hover);
 }
+
+/* Hierarchical hypothesis table of contents */
+
+.toc-hierarchical {
+    display: block;
+    margin-top: 30px;
+    overflow: hidden;
+
+    border: 1px solid rgba(217, 165, 141, 0.24);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(217, 165, 141, 0.055),
+            rgba(255, 255, 255, 0.012)
+        );
+}
+
+.toc-hierarchical .hypothesis-toc-title {
+    padding: 18px 22px 12px;
+
+    border-bottom: 0;
+
+    color: var(--text);
+
+    font-size: 0.93rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.toc-overview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+
+    margin: 0 22px 18px;
+    padding: 11px 13px;
+
+    border: 1px solid rgba(217, 165, 141, 0.14);
+    border-radius: 9px;
+
+    color: rgba(240, 238, 233, 0.66);
+    background: rgba(0, 0, 0, 0.16);
+
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.toc-overview-label {
+    color: var(--link-copper);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.toc-root,
+.toc-stage-children,
+.toc-part-children {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-root {
+    padding: 0 22px 22px;
+}
+
+.toc-stage {
+    margin-top: 18px;
+}
+
+.toc-stage:first-child {
+    margin-top: 0;
+}
+
+.toc-stage > a {
+    display: block;
+
+    padding: 10px 12px;
+
+    border-left: 3px solid var(--link-copper);
+    border-radius: 0 8px 8px 0;
+
+    color: var(--link-copper-hover) !important;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(217, 165, 141, 0.11),
+            rgba(217, 165, 141, 0.018)
+        );
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.08rem;
+    font-weight: 700;
+    line-height: 1.35;
+    text-decoration: none !important;
+}
+
+.toc-stage > a:hover,
+.toc-stage > a:focus-visible {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(235, 193, 171, 0.16),
+            rgba(235, 193, 171, 0.025)
+        );
+}
+
+.toc-stage-children {
+    margin: 8px 0 0 16px;
+    padding-left: 16px;
+
+    border-left: 1px solid rgba(217, 165, 141, 0.18);
+}
+
+.toc-part {
+    margin-top: 15px;
+}
+
+.toc-part > a {
+    display: block;
+    margin-left: -5px;
+    padding: 4px 8px;
+
+    color: #e5b79f !important;
+
+    font-size: 0.84rem;
+    font-weight: 750;
+    letter-spacing: 0.055em;
+    line-height: 1.45;
+    text-transform: uppercase;
+    text-decoration: none !important;
+}
+
+.toc-part > a::before {
+    content: "◆";
+    margin-right: 8px;
+
+    color: rgba(217, 165, 141, 0.62);
+
+    font-size: 0.58rem;
+    vertical-align: 0.12em;
+}
+
+.toc-part-children {
+    margin: 5px 0 0 11px;
+    padding-left: 15px;
+
+    border-left: 1px solid rgba(217, 165, 141, 0.12);
+}
+
+.toc-section {
+    margin: 2px 0;
+}
+
+.toc-section > a {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 6px;
+
+    padding: 5px 8px;
+
+    border-radius: 6px;
+
+    color: #d9a58d !important;
+
+    font-size: 0.91rem;
+    line-height: 1.42;
+    text-decoration: none !important;
+}
+
+.toc-section > a:hover,
+.toc-section > a:focus-visible {
+    color: #ebc1ab !important;
+    background: rgba(217, 165, 141, 0.065);
+}
+
+.toc-number {
+    color: rgba(235, 193, 171, 0.72);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.toc-label {
+    min-width: 0;
+}
+
+.toc-subpoint {
+    margin: 2px 0 2px 3.1rem;
+    padding-left: 10px;
+
+    border-left: 1px dotted rgba(217, 165, 141, 0.22);
+
+    color: rgba(169, 173, 182, 0.72);
+
+    font-size: 0.79rem;
+    line-height: 1.4;
+}
+
+.toc-appendix {
+    margin: 3px 0;
+}
+
+.toc-appendix > a {
+    display: block;
+    padding: 5px 8px 5px 12px;
+
+    color: #d9a58d !important;
+
+    font-size: 0.89rem;
+    line-height: 1.4;
+    text-decoration: none !important;
+}
+
+.toc-appendix > a::before {
+    content: "↳";
+    margin-right: 8px;
+    color: rgba(217, 165, 141, 0.54);
+}
+
+.toc-appendix > a:hover,
+.toc-appendix > a:focus-visible {
+    color: #ebc1ab !important;
+    background: rgba(217, 165, 141, 0.055);
+}
+
+@media (min-width: 900px) {
+    .toc-root {
+        padding-right: 26px;
+    }
+}
+
+@media (max-width: 720px) {
+    .toc-hierarchical {
+        margin-top: 24px;
+    }
+
+    .toc-root {
+        padding: 0 14px 16px;
+    }
+
+    .toc-hierarchical .hypothesis-toc-title {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .toc-overview {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+    .toc-stage-children {
+        margin-left: 9px;
+        padding-left: 10px;
+    }
+
+    .toc-part-children {
+        margin-left: 5px;
+        padding-left: 9px;
+    }
+
+    .toc-section > a {
+        grid-template-columns: 1.9rem minmax(0, 1fr);
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .toc-subpoint {
+        margin-left: 2.25rem;
+    }
+}
