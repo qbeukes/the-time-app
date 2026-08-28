@@ -9,6 +9,12 @@
     --copper-light: #e0a080;
     --copper-dark: #805443;
 
+    /* Link palette sampled from the warm copper/peach used in
+       “Time” and “Essence” in the Time App banner. */
+    --link-copper: #d9a58d;
+    --link-copper-hover: #ebc1ab;
+    --link-copper-underline: rgba(217, 165, 141, 0.58);
+
     --border: rgba(210, 146, 111, 0.28);
 
     --shadow:
@@ -503,4 +509,64 @@ footer {
         transition: none !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Banner-matched hypothesis links */
+
+/*
+ * Avoid the browser-default blue/purple hyperlink palette inside the
+ * research document.  #d9a58d is a light copper-peach taken from the
+ * brighter mid-tones of the “Time” / “Essence” lettering, giving good
+ * separation from the dark background without looking neon.
+ */
+.hypothesis-card a,
+.hypothesis-card a:visited {
+    color: var(--link-copper);
+    text-decoration-color: var(--link-copper-underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+}
+
+.hypothesis-card a:hover,
+.hypothesis-card a:focus-visible {
+    color: var(--link-copper-hover);
+    text-decoration-color: var(--link-copper-hover);
+}
+
+.hypothesis-card a:focus-visible {
+    outline: 2px solid rgba(235, 193, 171, 0.8);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+/* Keep the privacy-page contact links in the same family. */
+.contact-block a,
+.contact-block a:visited {
+    color: var(--link-copper);
+}
+
+.contact-block a:hover,
+.contact-block a:focus-visible {
+    color: var(--link-copper-hover);
+}
+/* Global branded text-link fallback */
+
+/*
+ * Ensures ordinary hyperlinks never fall back to browser-default blue/purple.
+ * Class-specific styles such as .button and .brand-link remain in control
+ * because they have higher selector specificity.
+ */
+a:not(.button):not(.brand-link) {
+    color: var(--link-copper);
+    text-decoration-color: var(--link-copper-underline);
+}
+
+a:not(.button):not(.brand-link):visited {
+    color: var(--link-copper);
+}
+
+a:not(.button):not(.brand-link):hover,
+a:not(.button):not(.brand-link):focus-visible {
+    color: var(--link-copper-hover);
+    text-decoration-color: var(--link-copper-hover);
 }
