@@ -19,8 +19,9 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 * Founder of The Time App and 12TRA: Quintin Beukes
 * Email: time_at_vanced.za.net
 
-# Copyright
-Please see [COPYRIGHT.md](COPYRIGHT.md)
+# Copyright and License
+* The Time App is licensed under GPLv3. See [LICENSE](LICENSE) for license information.
+* Copyright holder is Quintin Beukes. Please see [COPYRIGHT.md](COPYRIGHT.md) for detailed copyright and trademark information.
 
 # Release Notes
 ## Version 1.1.1 (3 September 2026)
