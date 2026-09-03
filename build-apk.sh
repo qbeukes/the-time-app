@@ -26,9 +26,14 @@ echo "📦 Fetching dependencies (flutter pub get)..."
 flutter pub get
 
 # 4. Build the release APK
-echo "🏗️ Building Release APK..."
-# Pass any arguments provided to this script directly to the flutter build command (e.g. --split-per-abi)
-flutter build apk --release "$@"
+echo "🏗️ Building Release APK (obfuscated, debug symbols extracted)..."
+# --obfuscate strips Dart symbol names; --split-debug-info extracts debug symbols
+# for separate upload. Pass any extra arguments (e.g. --split-per-abi) after these.
+DEBUG_SYMBOLS_DIR="$PROJECT_DIR/build/debug-symbols"
+flutter build apk --release \
+    --obfuscate \
+    --split-debug-info="$DEBUG_SYMBOLS_DIR" \
+    "$@"
 
 echo "============================================="
 echo " 🎉 Build completed successfully!"
@@ -44,4 +49,13 @@ if [ -d "$APK_DIR" ]; then
     done
 else
     echo "⚠️ Warning: Output directory not found. Please check build logs."
+fi
+
+# 6. Zip debug symbols alongside APK output
+if [ -d "$DEBUG_SYMBOLS_DIR" ] && [ -n "$(ls -A "$DEBUG_SYMBOLS_DIR" 2>/dev/null)" ]; then
+    CURRENT_VERSION=$(grep -E '^version:' "$PROJECT_DIR/pubspec.yaml" | sed 's/version:[[:space:]]*//' | tr -d '[:space:]')
+    DEBUG_SYMBOLS_ZIP="$APK_DIR/debug-symbols-v${CURRENT_VERSION}.zip"
+    echo "📦 Zipping debug symbols..."
+    (cd "$DEBUG_SYMBOLS_DIR" && zip -r "$DEBUG_SYMBOLS_ZIP" . -x "*.DS_Store") > /dev/null
+    echo "  🐛 Debug symbols: $(realpath "$DEBUG_SYMBOLS_ZIP") ($(du -h "$DEBUG_SYMBOLS_ZIP" | cut -f1))"
 fi

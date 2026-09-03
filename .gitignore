@@ -1,3 +1,8 @@
+# Don't commit the video artifacts used to build the videos
+# It bloats the repo
+media/video/*-clips/*.mp4
+media/video/*-clips/*.mp3
+
 # Miscellaneous
 *.class
 *.lock
@@ -41,6 +46,7 @@ analysis_benchmark.json
 .pub-preload-cache/
 .pub/
 build/
+android/.kotlin
 flutter_*.png
 linked_*.ds
 unlinked.ds
@@ -117,9 +123,4 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
-
-# Don't commit the video artifacts used to build the videos
-# It bloats the repo
-media/video/*-clips/*.mp4
-media/video/*-clips/*.mp3
 
