@@ -20,7 +20,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 * Email: time_at_vanced.za.net
 
 # Copyright
-[COPYRIGHT](COPYRIGHT.md)
+Please see [COPYRIGHT.md](COPYRIGHT.md)
 
 # Release Notes
 ## Version 1.1.1 (3 September 2026)
