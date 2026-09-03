@@ -40,8 +40,17 @@
                             <path d="M5 21h14"></path>
                         </svg>
 
-                        Download from Play Store
+                        Approved Testers:<br>Install via Play Store
                     </a>
+
+                    <button class="button" id="intro-video-btn" onclick="openVideoModal()" type="button">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                        </svg>
+
+                        AI Video Overview of 12TRA
+                    </button>
 
                     <a class="button" href="hypothesis.html">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -52,15 +61,12 @@
                         An Hypothesis of Time/Change
                     </a>
 
-                    <a class="button" href="privacy.html">
-                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M12 3 5 6v5c0 4.8 2.9 8.1 7 10 4.1-1.9 7-5.2 7-10V6l-7-3Z"></path>
-                            <path d="M9.5 12 11 13.5l3.5-3.5"></path>
-                        </svg>
+                </div>
 
+                <div class="secondary-actions">
+                    <a class="link-subtle" href="privacy.html">
                         Privacy Policy
                     </a>
-
                 </div>
 
             </div>
@@ -73,6 +79,68 @@
         <span class="accent">·</span>
         TIME IS OF THE ESSENCE
     </footer>
+
+    <!-- YouTube Video Modal -->
+    <div id="video-modal" class="video-modal" role="dialog" aria-modal="true" aria-label="Introductory Video"
+        onclick="closeVideoModal(event)">
+        <div class="video-modal-inner">
+            <button class="video-modal-close" onclick="closeVideoModal()" aria-label="Close video">&times;</button>
+            <div class="video-embed-wrap">
+                <iframe id="video-iframe" src="" title="The Time App — Introductory Video" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VIDEO_URL = 'https://www.youtube.com/embed/PFSLQB5Hj9w?autoplay=1&rel=0';
+
+        function openVideoModal() {
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-iframe');
+            iframe.src = VIDEO_URL;
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            // Push hash into URL so the link is shareable
+            history.pushState(null, '', '/#introvideo');
+        }
+
+        function closeVideoModal(event) {
+            if (event && event.target !== event.currentTarget && !event.target.classList.contains('video-modal-close')) return;
+            const modal = document.getElementById('video-modal');
+            const iframe = document.getElementById('video-iframe');
+            modal.classList.remove('is-open');
+            iframe.src = '';
+            document.body.style.overflow = '';
+            // Remove the hash without adding a history entry
+            history.replaceState(null, '', '/');
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('video-modal').classList.contains('is-open')) {
+                closeVideoModal({ target: document.getElementById('video-modal'), currentTarget: document.getElementById('video-modal') });
+            }
+        });
+
+        // Handle browser back button closing the modal
+        window.addEventListener('popstate', () => {
+            const modal = document.getElementById('video-modal');
+            if (modal.classList.contains('is-open') && window.location.hash !== '#introvideo') {
+                modal.classList.remove('is-open');
+                document.getElementById('video-iframe').src = '';
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Auto-open on page load if #introvideo is in the URL
+        if (window.location.hash === '#introvideo') {
+            document.addEventListener('DOMContentLoaded', openVideoModal);
+        }
+    </script>
+
 
 </body>
 

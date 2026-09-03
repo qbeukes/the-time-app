@@ -442,12 +442,12 @@ class _SecondsScreenState extends State<SecondsScreen>
               _buildControls(),
               const SizedBox(height: 24),
 
-              // ── Bell test ─────────────────────────────────────
-              _buildBellTest(),
-              const SizedBox(height: 20),
-
               // ── Bell schedule ─────────────────────────────────
               _buildBellSchedule(),
+              const SizedBox(height: 20),
+
+              // ── Bell test ─────────────────────────────────────
+              _buildBellTest(),
               const SizedBox(height: 32),
             ],
           ),
@@ -890,7 +890,7 @@ class _BellTestButtonState extends State<_BellTestButton> {
             ),
             const SizedBox(width: 10),
             Text(
-              'Test Bell',
+              'Test Bell Volume',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,

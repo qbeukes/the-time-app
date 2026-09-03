@@ -49,7 +49,7 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 1;
+  int _currentIndex = 0;
   late final ValueNotifier<DateTime> _globalMomentNotifier;
   late final LunarTimeUnitFactory _lunarFactory;
   double? _latitude;
@@ -376,7 +376,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(['Moon Time', 'Solar Time', 'Seconds'][_currentIndex]),
+            title: Text(['Lunar Time', 'Solar Time', 'Seconds'][_currentIndex]),
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -417,19 +417,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             behavior: HitTestBehavior.opaque,
             child: IndexedStack(index: _currentIndex, children: screens),
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (i) {
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (i) {
               setState(() => _currentIndex = i);
               _savePrefs();
             },
-            items: const [
-              BottomNavigationBarItem(
+            backgroundColor: const Color(0xFF12121E),
+            indicatorColor: Colors.deepPurpleAccent.withOpacity(0.30),
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            destinations: const [
+              NavigationDestination(
                 icon: Icon(Icons.nightlight_round),
-                label: 'Moon',
+                label: 'Lunar',
               ),
-              BottomNavigationBarItem(icon: Icon(Icons.wb_sunny), label: 'Sun'),
-              BottomNavigationBarItem(
+              NavigationDestination(
+                icon: Icon(Icons.wb_sunny),
+                label: 'Solar',
+              ),
+              NavigationDestination(
                 icon: Icon(Icons.hourglass_bottom_rounded),
                 label: 'Seconds',
               ),
