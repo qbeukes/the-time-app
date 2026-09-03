@@ -1,17 +1,19 @@
 # The Time App
-> Because Time is of the Essence
+* Because Time is of the Essence
 
 A minimalist's companion for temporal awareness from a variety of Temporal Time Systems including: 
 
-> 12TRA (An hypothesis of Time and Change)
-> Gregorian Calendar
-> Enochian Calendar
-> Julian Calendar
-> BetHaShem Midrash Luach (Study and Prayer Schedules)
+* 12TRA (An hypothesis of Time and Change)
+* Gregorian Calendar
+* Enochian Calendar
+* Julian Calendar
+* BetHaShem Midrash Luach (Study and Prayer Schedules)
 
 # Want to learn more about 12TRA?
-> This is the mobile app for 12TRA.
-> For 12TRA documentation, please visit https://time.veryeasy.co.za
+
+This is the mobile app for 12TRA.
+
+For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 # Contact Details
 Creator: Quintin Beukes
