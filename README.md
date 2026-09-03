@@ -9,6 +9,17 @@ A minimalist's companion for temporal awareness from a variety of Temporal Time 
 ## Julian Calendar
 ## BetHaShem Midrash Luach (Study and Prayer Schedules)
 
+# Want to learn more about 12TRA?
+> This is the mobile app for 12TRA.
+> For 12TRA documentation, please visit https://time.veryeasy.co.za
+
+# Contact Details
+Creator: Quintin Beukes
+Email: [EMAIL_ADDRESS]
+
+# Copyright
+[COPYRIGHT](COPYRIGHT.md)
+
 # Release Notes
 ## Version 1.1.1 (3 September 2026)
 1. Highlight the active tab at the bottom.

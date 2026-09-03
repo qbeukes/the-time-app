@@ -63,6 +63,7 @@ Example attribution:
 | **Since**     | December 2025        |
 | **Copyright** | © 2025 Quintin Beukes |
 | **Trademarks** | "Because Time is of the Essence"™, 12TRA™, 12 Temporal Resonance Architecture™, 12 Temporal Resonance Archetypes™ |
+| **Web Site**  | https://time.veryeasy.co.za |
 
 ---
 
