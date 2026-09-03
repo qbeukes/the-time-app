@@ -22,7 +22,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 # Copyright and License
 * The Time App is licensed under GPLv3. See [LICENSE](LICENSE) for license information.
-* Copyright holder is Quintin Beukes. Please see [COPYRIGHT.md](COPYRIGHT.md) for detailed copyright and trademark information.
+* Please see [COPYRIGHT.md](COPYRIGHT.md) for detailed copyright and trademark information.
 
 # Release Notes
 ## Version 1.1.1 (3 September 2026)
