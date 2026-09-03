@@ -3,11 +3,11 @@
 
 A minimalist's companion for temporal awareness from a variety of Temporal Time Systems including: 
 
-## 12TRA (An hypothesis of Time and Change)
-## Gregorian Calendar
-## Enochian Calendar
-## Julian Calendar
-## BetHaShem Midrash Luach (Study and Prayer Schedules)
+> 12TRA (An hypothesis of Time and Change)
+> Gregorian Calendar
+> Enochian Calendar
+> Julian Calendar
+> BetHaShem Midrash Luach (Study and Prayer Schedules)
 
 # Want to learn more about 12TRA?
 > This is the mobile app for 12TRA.
