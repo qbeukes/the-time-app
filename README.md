@@ -16,8 +16,8 @@ This is the mobile app for 12TRA.
 For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 # Contact Details
-Creator: Quintin Beukes
-Email: [EMAIL_ADDRESS]
+* Founder of The Time App and 12TRA: Quintin Beukes
+* Email: time_at_vanced.za.net
 
 # Copyright
 [COPYRIGHT](COPYRIGHT.md)
