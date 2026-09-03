@@ -1,5 +1,5 @@
 # The Time App
-* Because Time is of the Essence
+Because Time is of the Essence
 
 A minimalist's companion for temporal awareness from a variety of Temporal Time Systems including: 
 
