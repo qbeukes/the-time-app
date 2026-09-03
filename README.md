@@ -26,7 +26,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 # Release Notes
 ## Version 1.1.1 (3 September 2026)
-1. Highlight the active tab at the bottom.
+1. Highlight the active tab in the tab bar.
 2. Change the label and position of the "Test Bell" button to "Test Bell Volume" and moved it to the bottom of the screen. The new label better communicates the intention of the button.
 3. Change the default tab to Lunar Time because 12TRA is the temporal system documented in the Hypothesis of Time/Change (featured on the app website).
 
