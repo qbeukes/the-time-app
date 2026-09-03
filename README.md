@@ -14,8 +14,9 @@ This is the mobile app for 12TRA.
 
 For 12TRA documentation, please visit https://time.veryeasy.co.za
 
-# Short Overview of 12TRA's history and vision:
-So 12TRA is an implementation of 3 hypotheses based on my understanding of Time, which developed alongside a very similar temporal system used for the curriculum schedule of a Midrash academy. My description of Time and how I describe the mechanics of astrology often landed rationally in even the most stubborn "science is truth" type of minds. So in December I did an anthropological enquiry with AI under my definition of time to find patterns of Change, an understanding which developed with the help of my spiritual practice of Romans 12:1 (Leviticus 1 in First Temple Era, Daniel's Morning/Evening Offerings in Second Temple Era, Romans 12:1 and being reborn in Yeshua the Annointed One in the current Third Temple Era). 
+# The history and vision of 12TRA:
+
+12TRA is an implementation of 3 hypotheses based on my understanding of Time, which developed alongside a very similar temporal system used for the curriculum schedule of a Midrash academy. My description of Time and how I describe the mechanics of astrology often landed rationally in even the most stubborn "science is truth" type of minds. So in December I did an anthropological enquiry with AI under my definition of time to find patterns of Change, an understanding which developed with the help of my spiritual practice of Romans 12:1 (Leviticus 1 in First Temple Era, Daniel's Morning/Evening Offerings in Second Temple Era, Romans 12:1 and being reborn in Yeshua the Annointed One in the current Third Temple Era). 
 
 It hasn't been formally been developed into Theory, but the pattern GPT found in this enquiry was shared by all cultures, languages and societies throughout all of recorded human history. At first glance it seemed to match perfectly the patterns scientifically studied and discovered in the Burnt Offering prayer and the study's "curriculum schedule", I was astonished how these 2 different angles of study described an identical temporal pattern between:
 
