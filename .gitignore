@@ -11,6 +11,7 @@ media/video/*-clips/*.mp3
 *.swp
 .buildlog/
 .history
+.gemini-scratch/
 
 
 

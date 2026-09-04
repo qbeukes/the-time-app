@@ -173,10 +173,18 @@ main {
 
 .actions {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+}
+
+.actions-row {
+    display: flex;
     justify-content: center;
     align-items: stretch;
     gap: 14px;
-
     width: 100%;
 }
 
@@ -448,6 +456,10 @@ footer {
     }
 
     .actions {
+        gap: 8px;
+    }
+
+    .actions-row {
         flex-direction: column;
     }
 
@@ -569,6 +581,42 @@ a:not(.button):not(.brand-link):hover,
 a:not(.button):not(.brand-link):focus-visible {
     color: var(--link-copper-hover);
     text-decoration-color: var(--link-copper-hover);
+}
+
+/* History page styles */
+
+.history-kicker {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--copper-light);
+    margin-bottom: 12px;
+}
+
+.history-list {
+    margin: 16px 0;
+    padding-left: 1.5rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+}
+
+.history-list li {
+    margin-bottom: 12px;
+}
+
+.history-list li:last-child {
+    margin-bottom: 0;
+}
+
+.history-closing {
+    margin-top: 20px;
+    color: var(--copper-light);
+    font-style: italic;
+}
+
+.history-cta {
+    margin-top: 20px;
 }
 
 /* Hierarchical hypothesis table of contents */
@@ -964,3 +1012,61 @@ button.button {
     background: rgba(200,135,104,0.35);
     color: #fff;
 }
+
+/* Warning / Outdated Version Banner */
+.warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 18px 22px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.06) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-left: 4px solid #f59e0b;
+    border-radius: 12px;
+    color: var(--text);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.warning-banner-icon {
+    flex-shrink: 0;
+    color: #f59e0b;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.warning-banner-content {
+    flex: 1;
+}
+
+.warning-banner-title {
+    display: block;
+    color: #fbbf24;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.warning-banner-text {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .warning-banner {
+        gap: 12px;
+        padding: 14px 16px;
+        margin-bottom: 24px;
+    }
+
+    .warning-banner-text {
+        font-size: 0.9rem;
+    }
+}
+
