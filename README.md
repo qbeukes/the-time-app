@@ -37,7 +37,7 @@ The current (unpublished) version of the hypothesis consists of 3 hypotheses. H1
 
 1. Temporal Synchronization: Does the body's various internal temporal systems synchronize with the external temporal influences like our relative geometry to the sun and moon and other gravitational influences and rhythms.
 
-2. Temporal Architecture: Does the geometry and qualities of temporal cycles repeat when returning to them again in recurring cycles. What geometry is most appropriate, a Torus or a Dodecagon? How many sections does time's geometry consist of, 3, 6, 7, 9, 12, 13? A section in time is qualified by the combination of temporal influences and qualities experienced at that specific position of "state-space".
+2. Temporal Architecture: Does the geometry and qualities of temporal cycles repeat when returning to them again in recurring cycles. What geometry is most appropriate, a Torus or a Dodecagon? How many sections does time's geometry consist of, 3, 6, 7, 9, 12, 13? Is each section of this geometry qualified by a combination of temporal influences and qualities experienced at that specific position of "state-space"?
 
 3. Temporal Mechanics: Assuming we know our location in the Temporal Architecture of Change, what does the mechanics involved look like and what does the vector we're moving along mean? Can we leverage this vector to improve our lives?
 
