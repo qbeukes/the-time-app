@@ -45,6 +45,8 @@ The current (unpublished) version of the hypothesis consists of 3 hypotheses. H1
 
 These are but a small list of potential applications for applied Temporal Mechanics, a pragmatic theory of Change with the potential to improve many facets of human existence.
 
+Welcome to the study and application of the 12 Temporal Resonance Architecture.
+
 # Contact Details
 * Founder of The Time App and 12TRA: Quintin Beukes
 * Website: https://time.veryeasy.co.za
