@@ -18,7 +18,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 12TRA is an implementation of 3 hypotheses based on my understanding of Time, an understanding which developed alongside my prayers, which is essentially an application of Romans 12:1, which evolved through the following stages:
 
-1. Leviticus 1 in First Temple Era.
+1. Leviticus 1's "Burnt Offering" ritual in the First Temple Era.
 2. Daniel's Morning/Evening Offerings in the Second Temple Era.
 3. Romans 12:1 in the Third Temple Era and being reborn into eternal life through Yeshua the Annointed One.
 
