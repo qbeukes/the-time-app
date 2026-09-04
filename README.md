@@ -24,7 +24,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 This description of Time often landed well, even when describing controversial temporal mechanics. For example, it describes astrology in a way even the most stubborn "scientific minds" can appreciate. So in December 2025 I did an anthropological enquiry using AI combined with this perspective of time, looking for potential patterns of Change.
 
-As of now, it still hasn't been formally developed into Theory, but the pattern GPT found in this enquiry was (at the time) seemingly shared by all cultures, languages and societies throughout all of recorded human history. At first glance it seemed to perfectly align with the scientifically studied and documented patterns seen in the Burnt Offering prayer. I was astonished how these 2 different scientific disciplines described a seemingly identical temporal pattern between:
+As of now, it still hasn't been formally developed into Theory, but the pattern GPT found in this enquiry was (at the time) seemingly shared by all cultures, languages and societies throughout all of recorded human history. At first glance it seemed to perfectly align with the scientifically studied and documented patterns seen in the Burnt Offering prayer and the 12 tribes of Israel. I was astonished how these 2 different scientific disciplines described a seemingly identical temporal pattern between:
 
 1. Kneeling before the All Mighty and making space for the Holy Spirit by offering our body as a living sacrifice.
 2. An AI discovered cyclical pattern or golden thread which appears across all of human history.
