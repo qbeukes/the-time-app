@@ -20,7 +20,7 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 1. Leviticus 1 in First Temple Era.
 2. Daniel's Morning/Evening Offerings in the Second Temple Era.
-3. Romans 12:1 and being reborn in Yeshua the Annointed One in the current Third Temple Era.
+3. Romans 12:1 in the Third Temple Era and being reborn into eternal life through Yeshua the Annointed One.
 
 This description of Time often landed well, even when describing controversial temporal mechanics. For example, it describes astrology in a way even the most stubborn "scientific minds" can appreciate. So in December 2025 I did an anthropological enquiry using AI combined with this perspective of time, looking for potential patterns of Change.
 
