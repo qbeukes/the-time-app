@@ -1,5 +1,8 @@
 # Tester feedback
 
+* the class names of the web pages are all based on the styles created for the privacy policy.
+    refactor the class names to be generic. Get a few suggestions for names.
+
 * Introduce settings screen
 Let's think about the UI for a bit. I want to improve the top navigation bar. The Burger icon is currently use for configuring the current view. Instead I want a menu where or button for an About page or general settings page. Maybe we can make a gear icon that takes over the function of the current menu and the current burger menu show an About, Settings, entries. 
 
