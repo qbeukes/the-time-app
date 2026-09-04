@@ -1,7 +1,7 @@
 # The Time App
 Because Time is of the Essence
 
-A minimalist's companion for temporal awareness from a variety of Temporal Time Systems including: 
+A minimalist's companion for temporal awareness from a variety of temporal metrics including: 
 
 * 12TRA (An hypothesis of Time and Change)
 * Gregorian Calendar
@@ -20,13 +20,13 @@ For 12TRA documentation, please visit https://time.veryeasy.co.za
 
 1. Leviticus 1's "Burnt Offering" ritual in the First Temple Era.
 2. Daniel's Morning/Evening Offerings in the Second Temple Era.
-3. Romans 12:1 in the Third Temple Era and being reborn into eternal life through Yeshua the Annointed One.
+3. Romans 12:1 in the Third Temple Era and being reborn into The Eternal Life through Yeshua the Annointed One's teachings and the indwelling character of the Holy Spirit.
 
 All three of these implementations of the Burnt Offering keeps the Fire of the Spirit burning non-stop, night and day.
 
-This description of Time often landed well, even when describing controversial temporal mechanics. For example, it describes astrology in a way even stubborn "scientific minds" can appreciate. So in December 2025 I did an anthropological enquiry using AI combined with this perspective of time, looking for potential patterns of Change.
+This description of Time often lands well, even when describing controversial temporal mechanics. For example, it describes astrology in a way even stubborn "scientific minds" can appreciate. So in December 2025 I did an anthropological enquiry using AI combined with this perspective of time, looking for potential patterns of Change.
 
-As of now, it still hasn't been formally developed into Theory, but the pattern GPT found in this enquiry was (at the time) seemingly shared by all cultures, languages and societies throughout all of recorded human history. At first glance it seemed to perfectly align with the scientifically studied and documented patterns seen in the Burnt Offering prayer and the 12 tribes of Israel. I was astonished how these 2 different scientific disciplines described a seemingly identical temporal pattern between:
+As of now, it still hasn't been formally developed into Theory, but the pattern GPT found in this enquiry appeared (at the time) to be shared by all cultures, languages and societies throughout   recorded human history. At first glance it seemed to perfectly align with the scientifically studied and documented patterns seen in the Burnt Offering prayer and the 12 tribes of Israel. I was astonished how these 2 vastly different scientific disciplines described a seemingly identical pattern between:
 
 1. Kneeling before the All Mighty and making space for the Holy Spirit by offering our body as a living sacrifice.
 2. An AI discovered cyclical pattern or golden thread which appears across all of human history.
