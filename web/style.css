@@ -322,6 +322,13 @@ footer {
     margin-bottom: 24px;
 }
 
+.policy-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
 .brand-link {
     color: var(--text);
     text-decoration: none;
