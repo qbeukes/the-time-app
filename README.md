@@ -58,5 +58,5 @@ These are but a small list of potential applications for applied Temporal Mechan
 ## Version 1.1.1 (3 September 2026)
 1. Highlight the active tab in the tab bar.
 2. Change the label and position of the "Test Bell" button to "Test Bell Volume" and moved it to the bottom of the screen. The new label better communicates the intention of the button.
-3. Change the default tab to Lunar Time because 12TRA is the temporal system which inspired the development of this app and the Hypothesis of Time and Change (featured on the app website).
+3. Change the default tab to Lunar Time because 12TRA is the temporal system which inspired the development of this app and the Hypothesis of Time and Change (featured on the [app's website](https://time.veryeasy.co.za)).
 
