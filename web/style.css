@@ -306,18 +306,18 @@ footer {
     color: var(--copper-light);
 }
 
-/* Privacy page */
+/* Document pages (Privacy, History, Hypothesis) */
 
-.policy-main {
+.doc-main {
     justify-content: flex-start;
 }
 
-.policy-shell {
+.doc-shell {
     width: min(860px, 100%);
     margin: 0 auto;
 }
 
-.policy-top {
+.doc-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -325,7 +325,7 @@ footer {
     margin-bottom: 24px;
 }
 
-.policy-bottom {
+.doc-footer {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -354,7 +354,7 @@ footer {
     color: var(--copper-light);
 }
 
-.policy-card {
+.doc-card {
     border: 1px solid var(--border);
     border-radius: 18px;
 
@@ -370,7 +370,7 @@ footer {
     box-shadow: var(--shadow);
 }
 
-.policy-card h1 {
+.doc-card h1 {
     margin: 0 0 8px;
 
     font-family: Georgia, "Times New Roman", serif;
@@ -379,26 +379,26 @@ footer {
     letter-spacing: -0.02em;
 }
 
-.policy-date {
+.doc-meta {
     margin: 0 0 36px;
     color: var(--copper-light);
     font-size: 0.94rem;
     letter-spacing: 0.04em;
 }
 
-.policy-intro {
+.doc-intro {
     color: var(--text-muted);
     font-size: 1.03rem;
     line-height: 1.75;
 }
 
-.policy-section {
+.doc-section {
     padding-top: 28px;
     margin-top: 28px;
     border-top: 1px solid rgba(210, 146, 111, 0.14);
 }
 
-.policy-section h2 {
+.doc-section h2 {
     margin: 0 0 14px;
 
     color: var(--copper-light);
@@ -409,13 +409,13 @@ footer {
     text-transform: uppercase;
 }
 
-.policy-section p {
+.doc-section p {
     margin: 0 0 14px;
     color: var(--text-muted);
     line-height: 1.75;
 }
 
-.policy-section p:last-child {
+.doc-section p:last-child {
     margin-bottom: 0;
 }
 
@@ -483,16 +483,16 @@ footer {
         min-height: 56px;
     }
 
-    .policy-main {
+    .doc-main {
         justify-content: flex-start;
     }
 
-    .policy-top {
+    .doc-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .policy-card {
+    .doc-card {
         border-radius: 14px;
     }
 }
