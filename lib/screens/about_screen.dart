@@ -85,17 +85,16 @@ class _AboutScreenState extends State<AboutScreen> {
               icon: Icons.copyright_rounded,
               iconColor: const Color(0xFFB388FF),
               label: 'Copyright',
-              subtitle: 'time.veryeasy.co.za/copyright',
+              subtitle: 'time.veryeasy.co.za/copyright.html',
               onTap: () =>
-                  _openUrl('https://time.veryeasy.co.za/copyright'),
+                  _openUrl('https://time.veryeasy.co.za/copyright.html'),
             ),
             _AboutLinkTile(
               icon: Icons.privacy_tip_rounded,
               iconColor: Colors.tealAccent,
               label: 'Privacy Policy',
               subtitle: 'time.veryeasy.co.za/privacy.html',
-              onTap: () =>
-                  _openUrl('https://time.veryeasy.co.za/privacy.html'),
+              onTap: () => _openUrl('https://time.veryeasy.co.za/privacy.html'),
             ),
 
             const SizedBox(height: 28),
@@ -140,27 +139,38 @@ class _AboutScreenState extends State<AboutScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => _openUrl(
-                        'https://time.veryeasy.co.za/hypothesis.html'),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.open_in_new_rounded,
-                          size: 14,
-                          color: Colors.deepPurpleAccent,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(6),
+                      onTap: () => _openUrl(
+                        'https://time.veryeasy.co.za/hypothesis.html',
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 4,
                         ),
-                        SizedBox(width: 6),
-                        Text(
-                          'Read the full hypothesis',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.deepPurpleAccent,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.open_in_new_rounded,
+                              size: 14,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'Read the full hypothesis',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.deepPurpleAccent,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
@@ -193,57 +203,65 @@ class _AboutLinkTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: Colors.white.withOpacity(0.04),
-          border: Border.all(color: Colors.white.withOpacity(0.07)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: iconColor.withOpacity(0.12),
-                border: Border.all(color: iconColor.withOpacity(0.25)),
-              ),
-              child: Icon(icon, size: 18, color: iconColor),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.white.withOpacity(0.04),
+            border: Border.all(color: Colors.white.withOpacity(0.07)),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              child: Row(
                 children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: iconColor.withOpacity(0.12),
+                      border: Border.all(color: iconColor.withOpacity(0.25)),
+                    ),
+                    child: Icon(icon, size: 18, color: iconColor),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          subtitle,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white38,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.white38,
-                    ),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.white24,
+                    size: 20,
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.white24,
-              size: 20,
-            ),
-          ],
+          ),
         ),
       ),
     );

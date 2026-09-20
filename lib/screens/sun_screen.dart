@@ -9,7 +9,6 @@ class SunScreen extends StatelessWidget {
   final bool showGregorian;
   final bool showEnochian;
   final bool showJulian;
-  final bool showLocalTime;
 
   const SunScreen({
     super.key,
@@ -17,7 +16,6 @@ class SunScreen extends StatelessWidget {
     this.showGregorian = true,
     this.showEnochian = true,
     this.showJulian = true,
-    this.showLocalTime = true,
   });
 
   // ═══════════════════════════════════════════════════════════════

@@ -72,7 +72,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   bool _sunShowGregorian = true;
   bool _sunShowEnochian = true;
   bool _sunShowJulian = true;
-  bool _sunShowLocalTime = true;
 
   // ── Developer features ───────────────────────────────────────
   bool _developerFeaturesEnabled = false;
@@ -121,13 +120,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _sunShowEnochian = prefs.getBool('sunShowEnochian')!;
         if (prefs.containsKey('sunShowJulian'))
           _sunShowJulian = prefs.getBool('sunShowJulian')!;
-        if (prefs.containsKey('sunShowLocalTime'))
-          _sunShowLocalTime = prefs.getBool('sunShowLocalTime')!;
         if (prefs.containsKey('currentIndex'))
           _currentIndex = prefs.getInt('currentIndex')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
-        _developerFeaturesEnabled = prefs.getBool('developerFeaturesEnabled') ?? false;
+        _developerFeaturesEnabled =
+            prefs.getBool('developerFeaturesEnabled') ?? false;
 
         final profilesJson = prefs.getStringList('profiles');
         if (profilesJson != null) {
@@ -158,10 +156,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('sunShowGregorian', _sunShowGregorian);
       await prefs.setBool('sunShowEnochian', _sunShowEnochian);
       await prefs.setBool('sunShowJulian', _sunShowJulian);
-      await prefs.setBool('sunShowLocalTime', _sunShowLocalTime);
       await prefs.setInt('currentIndex', _currentIndex);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
-      await prefs.setBool('developerFeaturesEnabled', _developerFeaturesEnabled);
+      await prefs.setBool(
+        'developerFeaturesEnabled',
+        _developerFeaturesEnabled,
+      );
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
           .toList();
@@ -247,7 +247,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _sunShowGregorian = true;
       _sunShowEnochian = true;
       _sunShowJulian = true;
-      _sunShowLocalTime = true;
       _profiles = TimerProfile.defaults;
       _activeProfileIndex = 1;
       _developerFeaturesEnabled = false;
@@ -272,7 +271,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 
   void _openGlobalMenu(BuildContext ctx) {
-    final configLabel = ['Configure Lunar', 'Configure Solar', 'Configure Timer'][_currentIndex];
+    final configLabel = [
+      'Configure Lunar Options',
+      'Configure Solar Options',
+      'Configure Timer',
+    ][_currentIndex];
     showModalBottomSheet(
       context: ctx,
       backgroundColor: const Color(0xFF12121E),
@@ -325,9 +328,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   Navigator.pop(ctx);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const AboutScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const AboutScreen()),
                   );
                 },
               ),
@@ -378,13 +379,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         showGregorian: _sunShowGregorian,
         showEnochian: _sunShowEnochian,
         showJulian: _sunShowJulian,
-        showLocalTime: _sunShowLocalTime,
-        onChanged: (gregorian, enochian, julian, localTime) {
+        onChanged: (gregorian, enochian, julian) {
           setState(() {
             _sunShowGregorian = gregorian;
             _sunShowEnochian = enochian;
             _sunShowJulian = julian;
-            _sunShowLocalTime = localTime;
           });
           _savePrefs();
         },
@@ -461,7 +460,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             showGregorian: _sunShowGregorian,
             showEnochian: _sunShowEnochian,
             showJulian: _sunShowJulian,
-            showLocalTime: _sunShowLocalTime,
           ),
           SecondsScreen(
             profiles: _profiles,
@@ -533,10 +531,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 icon: Icon(Icons.nightlight_round),
                 label: 'Lunar',
               ),
-              NavigationDestination(
-                icon: Icon(Icons.wb_sunny),
-                label: 'Solar',
-              ),
+              NavigationDestination(icon: Icon(Icons.wb_sunny), label: 'Solar'),
               NavigationDestination(
                 icon: Icon(Icons.hourglass_bottom_rounded),
                 label: 'Seconds',
@@ -561,7 +556,14 @@ class _MoonMenuSheet extends StatefulWidget {
   final bool showLunarAnchor;
   final bool useLocalTilt;
   final bool hasLocation;
-  final void Function(bool tra, bool luach, bool luachTraOverlap, bool lunarAnchor, bool tilt) onChanged;
+  final void Function(
+    bool tra,
+    bool luach,
+    bool luachTraOverlap,
+    bool lunarAnchor,
+    bool tilt,
+  )
+  onChanged;
 
   const _MoonMenuSheet({
     required this.developerFeaturesEnabled,
@@ -595,7 +597,8 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
     _tilt = widget.useLocalTilt;
   }
 
-  void _emit() => widget.onChanged(_tra, _luach, _luachTraOverlap, _lunarAnchor, _tilt);
+  void _emit() =>
+      widget.onChanged(_tra, _luach, _luachTraOverlap, _lunarAnchor, _tilt);
 
   @override
   Widget build(BuildContext context) {
@@ -681,20 +684,12 @@ class _SunMenuSheet extends StatefulWidget {
   final bool showGregorian;
   final bool showEnochian;
   final bool showJulian;
-  final bool showLocalTime;
-  final void Function(
-    bool gregorian,
-    bool enochian,
-    bool julian,
-    bool localTime,
-  )
-  onChanged;
+  final void Function(bool gregorian, bool enochian, bool julian) onChanged;
 
   const _SunMenuSheet({
     required this.showGregorian,
     required this.showEnochian,
     required this.showJulian,
-    required this.showLocalTime,
     required this.onChanged,
   });
 
@@ -706,7 +701,6 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
   late bool _gregorian;
   late bool _enochian;
   late bool _julian;
-  late bool _localTime;
 
   @override
   void initState() {
@@ -714,10 +708,9 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
     _gregorian = widget.showGregorian;
     _enochian = widget.showEnochian;
     _julian = widget.showJulian;
-    _localTime = widget.showLocalTime;
   }
 
-  void _emit() => widget.onChanged(_gregorian, _enochian, _julian, _localTime);
+  void _emit() => widget.onChanged(_gregorian, _enochian, _julian);
 
   @override
   Widget build(BuildContext context) {
@@ -761,17 +754,6 @@ class _SunMenuSheetState extends State<_SunMenuSheet> {
               value: _enochian,
               onChanged: (v) {
                 setState(() => _enochian = v);
-                _emit();
-              },
-            ),
-            _ToggleRow(
-              label: 'Local Time',
-              subtitle: 'Ticking daily solar clock momentum',
-              icon: '⏰',
-              iconColor: const Color(0xFF00E5FF),
-              value: _localTime,
-              onChanged: (v) {
-                setState(() => _localTime = v);
                 _emit();
               },
             ),
@@ -1371,36 +1353,44 @@ class _MenuEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          color: Colors.white.withOpacity(0.04),
-          border: Border.all(color: Colors.white.withOpacity(0.07)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: Colors.white70),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.white.withOpacity(0.04),
+            border: Border.all(color: Colors.white.withOpacity(0.07)),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(icon, size: 20, color: Colors.white70),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: Colors.white24,
+                    size: 20,
+                  ),
+                ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.white24,
-              size: 20,
-            ),
-          ],
+          ),
         ),
       ),
     );

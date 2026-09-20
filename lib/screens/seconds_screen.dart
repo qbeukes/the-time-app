@@ -468,14 +468,9 @@ class _SecondsScreenState extends State<SecondsScreen>
         itemCount: widget.profiles.length,
         itemBuilder: (context, i) {
           final active = i == widget.activeProfileIndex;
-          return GestureDetector(
-            onTap: () {
-              if (!_isRunning) widget.onProfileChanged(i);
-            },
-            child: AnimatedContainer(
+          return AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: active
@@ -487,16 +482,26 @@ class _SecondsScreenState extends State<SecondsScreen>
                       : Colors.white.withOpacity(0.1),
                 ),
               ),
-              child: Text(
-                widget.profiles[i].name,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: active ? Colors.deepPurpleAccent : Colors.white38,
-                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: _isRunning ? null : () => widget.onProfileChanged(i),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                    child: Text(
+                      widget.profiles[i].name,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: active ? Colors.deepPurpleAccent : Colors.white38,
+                        fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
+            );
         },
       ),
     );
@@ -602,35 +607,40 @@ class _SecondsScreenState extends State<SecondsScreen>
           onTap: _isRunning ? null : _reset,
         ),
         const SizedBox(width: 20),
-        GestureDetector(
-          onTap: _isRunning ? _pause : _start,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: _isRunning
-                    ? [Colors.amberAccent, Colors.orange]
-                    : [Colors.deepPurpleAccent, Colors.indigoAccent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: _isRunning
-                      ? Colors.amber.withOpacity(0.45)
-                      : Colors.deepPurple.withOpacity(0.5),
-                  blurRadius: 22,
-                  spreadRadius: 2,
-                ),
-              ],
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: _isRunning
+                  ? [Colors.amberAccent, Colors.orange]
+                  : [Colors.deepPurpleAccent, Colors.indigoAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            child: Icon(
-              _isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              color: Colors.white,
-              size: 36,
+            boxShadow: [
+              BoxShadow(
+                color: _isRunning
+                    ? Colors.amber.withOpacity(0.45)
+                    : Colors.deepPurple.withOpacity(0.5),
+                blurRadius: 22,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: _isRunning ? _pause : _start,
+              child: Icon(
+                _isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 36,
+              ),
             ),
           ),
         ),
@@ -861,46 +871,53 @@ class _BellTestButtonState extends State<_BellTestButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: _pressed
+            ? Colors.deepPurpleAccent.withOpacity(0.15)
+            : Colors.white.withOpacity(0.03),
+        border: Border.all(
           color: _pressed
-              ? Colors.deepPurpleAccent.withOpacity(0.15)
-              : Colors.white.withOpacity(0.03),
-          border: Border.all(
-            color: _pressed
-                ? Colors.deepPurpleAccent.withOpacity(0.6)
-                : Colors.white.withOpacity(0.07),
-          ),
+              ? Colors.deepPurpleAccent.withOpacity(0.6)
+              : Colors.white.withOpacity(0.07),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 150),
-              style: TextStyle(
-                fontSize: _pressed ? 20 : 18,
-              ),
-              child: const Text('🔔'),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: _handleTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 150),
+                  style: TextStyle(
+                    fontSize: _pressed ? 20 : 18,
+                  ),
+                  child: const Text('🔔'),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Test Bell Volume',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1,
+                    color: _pressed
+                        ? Colors.deepPurpleAccent
+                        : Colors.white38,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            Text(
-              'Test Bell Volume',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 1,
-                color: _pressed
-                    ? Colors.deepPurpleAccent
-                    : Colors.white38,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -921,20 +938,25 @@ class _CircleBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = onTap != null;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 200),
-        opacity: enabled ? 1.0 : 0.35,
-        child: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color.withOpacity(0.1),
-            border: Border.all(color: color, width: 1.5),
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 200),
+      opacity: enabled ? 1.0 : 0.35,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withOpacity(0.1),
+          border: Border.all(color: color, width: 1.5),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Icon(icon, color: color, size: 22),
           ),
-          child: Icon(icon, color: color, size: 22),
         ),
       ),
     );

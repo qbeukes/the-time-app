@@ -162,65 +162,71 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          GestureDetector(
-            onTap: _confirmReset,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          Material(
+            color: Colors.transparent,
+            child: Ink(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
                 color: Colors.redAccent.withOpacity(0.06),
                 border:
                     Border.all(color: Colors.redAccent.withOpacity(0.15)),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.redAccent.withOpacity(0.12),
-                      border: Border.all(
-                        color: Colors.redAccent.withOpacity(0.25),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: _confirmReset,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.redAccent.withOpacity(0.12),
+                          border: Border.all(
+                            color: Colors.redAccent.withOpacity(0.25),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.restore_rounded,
+                          size: 18,
+                          color: Colors.redAccent,
+                        ),
                       ),
-                    ),
-                    child: const Icon(
-                      Icons.restore_rounded,
-                      size: 18,
-                      color: Colors.redAccent,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Reset to Defaults',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.redAccent,
-                          ),
+                      const SizedBox(width: 14),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Reset to Defaults',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.redAccent,
+                              ),
+                            ),
+                            Text(
+                              'Removes all customizations and restores all '
+                              'settings and timer profiles to their defaults',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.white38,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Removes all customizations and restores all '
-                          'settings and timer profiles to their defaults',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Colors.white24,
+                        size: 20,
+                      ),
+                    ],
                   ),
-                  const Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.white24,
-                    size: 20,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
