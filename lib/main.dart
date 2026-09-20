@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:the_time_app/screens/moon_screen.dart';
 import 'package:the_time_app/screens/sun_screen.dart';
 import 'package:the_time_app/screens/seconds_screen.dart';
+import 'package:the_time_app/screens/settings_screen.dart';
+import 'package:the_time_app/screens/about_screen.dart';
 import 'package:the_time_app/models/timer_profile.dart';
 import 'package:the_time_app/models/timeunit/lunar_time_unit_factory.dart';
 
@@ -72,6 +74,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   bool _sunShowJulian = true;
   bool _sunShowLocalTime = true;
 
+  // ── Developer features ───────────────────────────────────────
+  bool _developerFeaturesEnabled = false;
+
   // ── Seconds / profiles ────────────────────────────────────────
   late List<TimerProfile> _profiles;
   int _activeProfileIndex = 1;
@@ -122,6 +127,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _currentIndex = prefs.getInt('currentIndex')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
+        _developerFeaturesEnabled = prefs.getBool('developerFeaturesEnabled') ?? false;
 
         final profilesJson = prefs.getStringList('profiles');
         if (profilesJson != null) {
@@ -129,6 +135,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               .map((s) => TimerProfile.fromJson(jsonDecode(s)))
               .toList();
           if (_activeProfileIndex >= _profiles.length) _activeProfileIndex = 0;
+        }
+
+        // Coerce lunar anchors off when developer features are disabled
+        if (!_developerFeaturesEnabled) {
+          _moonShowLunarAnchor = false;
         }
       });
     } catch (e) {
@@ -150,6 +161,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('sunShowLocalTime', _sunShowLocalTime);
       await prefs.setInt('currentIndex', _currentIndex);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
+      await prefs.setBool('developerFeaturesEnabled', _developerFeaturesEnabled);
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
           .toList();
@@ -221,9 +233,31 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
   }
 
+  // ── Global reset ──────────────────────────────────────────────
+
+  Future<void> _resetAllToDefaults() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    setState(() {
+      _moonShowTra = true;
+      _moonShowLuach = true;
+      _moonShowLuachTraOverlap = true;
+      _moonShowLunarAnchor = false;
+      _moonUseLocalTilt = true;
+      _sunShowGregorian = true;
+      _sunShowEnochian = true;
+      _sunShowJulian = true;
+      _sunShowLocalTime = true;
+      _profiles = TimerProfile.defaults;
+      _activeProfileIndex = 1;
+      _developerFeaturesEnabled = false;
+      _currentIndex = 0;
+    });
+  }
+
   // ── Burger menus ──────────────────────────────────────────────
 
-  void _openBurgerMenu(BuildContext ctx) {
+  void _openScreenConfigSheet(BuildContext ctx) {
     switch (_currentIndex) {
       case 0:
         _showMoonMenu(ctx);
@@ -237,6 +271,73 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     }
   }
 
+  void _openGlobalMenu(BuildContext ctx) {
+    final configLabel = ['Configure Lunar', 'Configure Solar', 'Configure Timer'][_currentIndex];
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: const Color(0xFF12121E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _sheetHandle(),
+              const SizedBox(height: 20),
+              _MenuEntry(
+                icon: Icons.tune_rounded,
+                label: configLabel,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _openScreenConfigSheet(ctx);
+                },
+              ),
+              _MenuEntry(
+                icon: Icons.settings_rounded,
+                label: 'Settings',
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SettingsScreen(
+                        developerFeaturesEnabled: _developerFeaturesEnabled,
+                        onDeveloperFeaturesChanged: (v) {
+                          setState(() {
+                            _developerFeaturesEnabled = v;
+                            if (!v) _moonShowLunarAnchor = false;
+                          });
+                          _savePrefs();
+                        },
+                        onResetAllToDefaults: _resetAllToDefaults,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              _MenuEntry(
+                icon: Icons.info_outline_rounded,
+                label: 'About',
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AboutScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showMoonMenu(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
@@ -245,6 +346,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) => _MoonMenuSheet(
+        developerFeaturesEnabled: _developerFeaturesEnabled,
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
         showLuachTraOverlap: _moonShowLuachTraOverlap,
@@ -371,9 +473,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ];
 
-        // Options button is available for Moon, Sun, and Seconds screen
-        const showBurger = true;
-
         return Scaffold(
           appBar: AppBar(
             title: Text(['Lunar Time', 'Solar Time', 'Seconds'][_currentIndex]),
@@ -397,19 +496,22 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   )
                 : null,
             actions: [
-              if (_currentIndex != 2)
-                IconButton(
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: _pickDate,
+              IconButton(
+                icon: Icon(
+                  Icons.calendar_month,
+                  color: _currentIndex == 2
+                      ? Colors.white.withOpacity(0.2)
+                      : null,
                 ),
-              if (showBurger)
-                Builder(
-                  builder: (ctx) => IconButton(
-                    icon: const Icon(Icons.menu_rounded),
-                    tooltip: 'Options',
-                    onPressed: () => _openBurgerMenu(ctx),
-                  ),
+                onPressed: _currentIndex == 2 ? null : _pickDate,
+              ),
+              Builder(
+                builder: (ctx) => IconButton(
+                  icon: const Icon(Icons.menu_rounded),
+                  tooltip: 'Menu',
+                  onPressed: () => _openGlobalMenu(ctx),
                 ),
+              ),
             ],
           ),
           body: GestureDetector(
@@ -452,6 +554,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 // ═════════════════════════════════════════════════════════════
 
 class _MoonMenuSheet extends StatefulWidget {
+  final bool developerFeaturesEnabled;
   final bool showTra;
   final bool showLuach;
   final bool showLuachTraOverlap;
@@ -461,6 +564,7 @@ class _MoonMenuSheet extends StatefulWidget {
   final void Function(bool tra, bool luach, bool luachTraOverlap, bool lunarAnchor, bool tilt) onChanged;
 
   const _MoonMenuSheet({
+    required this.developerFeaturesEnabled,
     required this.showTra,
     required this.showLuach,
     required this.showLuachTraOverlap,
@@ -550,17 +654,18 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
                   _emit();
                 },
               ),
-            _ToggleRow(
-              label: 'Lunar Anchors',
-              subtitle: 'Full & New lunar anchors',
-              icon: '🌕',
-              iconColor: const Color(0xFFFFC107),
-              value: _lunarAnchor,
-              onChanged: (v) {
-                setState(() => _lunarAnchor = v);
-                _emit();
-              },
-            ),
+            if (widget.developerFeaturesEnabled)
+              _ToggleRow(
+                label: 'Lunar Anchors',
+                subtitle: 'Full & New lunar anchors',
+                icon: '🌕',
+                iconColor: const Color(0xFFFFC107),
+                value: _lunarAnchor,
+                onChanged: (v) {
+                  setState(() => _lunarAnchor = v);
+                  _emit();
+                },
+              ),
           ],
         ),
       ),
@@ -1252,6 +1357,55 @@ const _sheetTitleStyle = TextStyle(
   letterSpacing: 2,
   color: Colors.white70,
 );
+
+class _MenuEntry extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _MenuEntry({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.white.withOpacity(0.04),
+          border: Border.all(color: Colors.white.withOpacity(0.07)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: Colors.white70),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white24,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _ToggleRow extends StatelessWidget {
   final String label;
