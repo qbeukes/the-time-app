@@ -1,0 +1,8 @@
+<en-US>
+1. About screen — shows an overview of the app, it's version and links for additional information.
+2. Settings screen — actions for 'Enable Developer Features' (like Lunar Anchors) and 'Reset to Defaults'.
+3. Improved navigation — Added uniformity of the navbar across all screens and an improve options menu.
+4. Improved UI — all tappable buttons now follow Material Design principles for more natural tactile feedback.
+
+More detailed releases notes available on GitHub (see website).
+</en-US>

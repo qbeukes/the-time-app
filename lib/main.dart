@@ -272,8 +272,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   void _openGlobalMenu(BuildContext ctx) {
     final configLabel = [
-      'Configure Lunar Options',
-      'Configure Solar Options',
+      'Configure Lunar Screen',
+      'Configure Solar Screen',
       'Configure Timer',
     ][_currentIndex];
     showModalBottomSheet(
@@ -645,18 +645,18 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
                 _emit();
               },
             ),
-            if (widget.hasLocation)
-              _ToggleRow(
-                label: 'Local Tilt',
-                subtitle: 'Adjust moon tilt for your location',
-                icon: '📍',
-                iconColor: Colors.amberAccent,
-                value: _tilt,
-                onChanged: (v) {
-                  setState(() => _tilt = v);
-                  _emit();
-                },
-              ),
+            _ToggleRow(
+              label: 'Local Tilt',
+              subtitle: 'Moon tilts to reflect to your location',
+              icon: '📍',
+              iconColor: Colors.amberAccent,
+              value: _tilt,
+              enabled: widget.hasLocation,
+              onChanged: (v) {
+                setState(() => _tilt = v);
+                _emit();
+              },
+            ),
             if (widget.developerFeaturesEnabled)
               _ToggleRow(
                 label: 'Lunar Anchors',
@@ -1403,6 +1403,7 @@ class _ToggleRow extends StatelessWidget {
   final String icon;
   final Color iconColor;
   final bool value;
+  final bool enabled;
   final ValueChanged<bool> onChanged;
 
   const _ToggleRow({
@@ -1412,48 +1413,57 @@ class _ToggleRow extends StatelessWidget {
     required this.iconColor,
     required this.value,
     required this.onChanged,
+    this.enabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: iconColor.withOpacity(0.12),
-              border: Border.all(color: iconColor.withOpacity(0.25)),
+    final effectiveOpacity = enabled ? 1.0 : 0.35;
+    return Opacity(
+      opacity: effectiveOpacity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: iconColor.withOpacity(0.12),
+                border: Border.all(color: iconColor.withOpacity(0.25)),
+              ),
+              child: Center(
+                child: Text(icon, style: const TextStyle(fontSize: 16)),
+              ),
             ),
-            child: Center(
-              child: Text(icon, style: const TextStyle(fontSize: 16)),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                Text(
-                  subtitle,
-                  style: const TextStyle(fontSize: 11, color: Colors.white38),
-                ),
-              ],
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 11, color: Colors.white38),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Switch(value: value, activeColor: iconColor, onChanged: onChanged),
-        ],
+            Switch(
+              value: enabled ? value : false,
+              activeColor: iconColor,
+              onChanged: enabled ? onChanged : null,
+            ),
+          ],
+        ),
       ),
     );
   }
