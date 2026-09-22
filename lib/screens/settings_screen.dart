@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final bool developerFeaturesEnabled;
-  final ValueChanged<bool> onDeveloperFeaturesChanged;
+  final bool advancedFeaturesEnabled;
+  final ValueChanged<bool> onAdvancedFeaturesChanged;
   final VoidCallback onResetAllToDefaults;
 
   const SettingsScreen({
     super.key,
-    required this.developerFeaturesEnabled,
-    required this.onDeveloperFeaturesChanged,
+    required this.advancedFeaturesEnabled,
+    required this.onAdvancedFeaturesChanged,
     required this.onResetAllToDefaults,
   });
 
@@ -17,12 +17,12 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late bool _devFeatures;
+  late bool _advFeatures;
 
   @override
   void initState() {
     super.initState();
-    _devFeatures = widget.developerFeaturesEnabled;
+    _advFeatures = widget.advancedFeaturesEnabled;
   }
 
   void _confirmReset() async {
@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (confirm == true) {
       widget.onResetAllToDefaults();
-      setState(() => _devFeatures = false);
+      setState(() => _advFeatures = false);
       if (mounted) Navigator.pop(context);
     }
   }
@@ -78,9 +78,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         children: [
-          // ── Developer Features section ─────────────────
+          // ── Advanced Features section ─────────────────
           const Text(
-            'DEVELOPER FEATURES',
+            'ADVANCED FEATURES',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.bold,
@@ -120,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Enable Developer Features',
+                        'Enable Advanced Features',
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -138,11 +138,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 Switch(
-                  value: _devFeatures,
+                  value: _advFeatures,
                   activeColor: Colors.deepPurpleAccent,
                   onChanged: (v) {
-                    setState(() => _devFeatures = v);
-                    widget.onDeveloperFeaturesChanged(v);
+                    setState(() => _advFeatures = v);
+                    widget.onAdvancedFeaturesChanged(v);
                   },
                 ),
               ],

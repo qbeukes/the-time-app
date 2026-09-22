@@ -67,7 +67,15 @@ This is just a few examples of the endless applications of Temporal Mechanics �
 * Please see [COPYRIGHT.md](COPYRIGHT.md) for detailed copyright and trademark information.
 
 # Release Notes
+## Version 1.2.1 (22 September 2026)
+
+1. **Default Settings** — restored on update for enhanced experience.
+2. **Live Time** — icon changed for better visibility and a more fitting icon.
+3. **Developer Features** — toggle name changed to Advanced Features.
+4. **Local Tilt** — toggle only visible with Advanced Features turned on.
+
 ## Version 1.2.0 (20 September 2026)
+
 1. **About screen** — accessible from the main menu; displays the app version, website, copyright, privacy policy, and a summary of the Hypothesis of Time and Change with a link to the full hypothesis. All links open in the system browser.
 2. **Settings screen** — accessible from the main menu; includes an *Enable Developer Features* toggle that unlocks advanced display options (currently: Show Lunar Anchors on the Lunar screen) and a *Reset to Defaults* action that restores all settings and timer profiles to their factory defaults.
 3. **Reworked navigation menu** — the burger icon now opens a global menu with three entries: *Configure [Screen]* (context-sensitive label per active tab), *Settings*, and *About*. The calendar icon is always shown in the app bar and is automatically disabled on the Seconds tab where date navigation does not apply.
@@ -76,6 +84,7 @@ This is just a few examples of the endless applications of Temporal Mechanics �
 6. **Copyright & Trademark page** — added `copyright.html` to the web presence, linked from the site footer alongside the existing Privacy Policy.
 
 ## Version 1.1.1 (3 September 2026)
+
 1. **Navigation** — Highlight the active tab in the tab bar.
 2. **UI Improvements** — Change the label and position of the "Test Bell" button to "Test Bell Volume" and moved it to the bottom of the screen. The new label better communicates the intention of the button.
 3. **Default Screen to show the 12TRA** — Change the default tab to Lunar Time because 12TRA is the temporal system which inspired the development of both this app and the Hypothesis of Time and Change (featured on the [app's website](https://time.veryeasy.co.za)).

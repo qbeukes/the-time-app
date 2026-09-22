@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:the_time_app/screens/moon_screen.dart';
@@ -66,15 +67,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   bool _moonShowLuach = true;
   bool _moonShowLuachTraOverlap = true;
   bool _moonShowLunarAnchor = false;
-  bool _moonUseLocalTilt = true;
+  bool _moonUseLocalTilt = false;
 
   // ── Sun toggles ───────────────────────────────────────────────
   bool _sunShowGregorian = true;
   bool _sunShowEnochian = true;
   bool _sunShowJulian = true;
 
-  // ── Developer features ───────────────────────────────────────
-  bool _developerFeaturesEnabled = false;
+  // ── Advanced features ───────────────────────────────────────
+  bool _advancedFeaturesEnabled = false;
 
   // ── Seconds / profiles ────────────────────────────────────────
   late List<TimerProfile> _profiles;
@@ -124,8 +125,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           _currentIndex = prefs.getInt('currentIndex')!;
         if (prefs.containsKey('activeProfileIndex'))
           _activeProfileIndex = prefs.getInt('activeProfileIndex')!;
-        _developerFeaturesEnabled =
-            prefs.getBool('developerFeaturesEnabled') ?? false;
+        _advancedFeaturesEnabled =
+            prefs.getBool('advancedFeaturesEnabled') ?? false;
 
         final profilesJson = prefs.getStringList('profiles');
         if (profilesJson != null) {
@@ -135,11 +136,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           if (_activeProfileIndex >= _profiles.length) _activeProfileIndex = 0;
         }
 
-        // Coerce lunar anchors off when developer features are disabled
-        if (!_developerFeaturesEnabled) {
+        // Coerce advanced-features-gated toggles off when advanced features are disabled
+        if (!_advancedFeaturesEnabled) {
           _moonShowLunarAnchor = false;
+          _moonUseLocalTilt = false;
         }
       });
+
+      // ── Update detection ────────────────────────────────────────
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
+      final lastSeenBuildNumber = prefs.getInt('lastSeenBuildNumber');
+
+      if (lastSeenBuildNumber != null &&
+          lastSeenBuildNumber < currentBuildNumber) {
+        await _onAppUpdated(prefs);
+      }
+
+      // Always persist the current build number after handling
+      await prefs.setInt('lastSeenBuildNumber', currentBuildNumber);
     } catch (e) {
       debugPrint('Error loading prefs: $e');
     }
@@ -158,10 +173,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       await prefs.setBool('sunShowJulian', _sunShowJulian);
       await prefs.setInt('currentIndex', _currentIndex);
       await prefs.setInt('activeProfileIndex', _activeProfileIndex);
-      await prefs.setBool(
-        'developerFeaturesEnabled',
-        _developerFeaturesEnabled,
-      );
+      await prefs.setBool('advancedFeaturesEnabled', _advancedFeaturesEnabled);
       final profilesJson = _profiles
           .map((p) => jsonEncode(p.toJson()))
           .toList();
@@ -243,15 +255,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       _moonShowLuach = true;
       _moonShowLuachTraOverlap = true;
       _moonShowLunarAnchor = false;
-      _moonUseLocalTilt = true;
+      _moonUseLocalTilt = false;
       _sunShowGregorian = true;
       _sunShowEnochian = true;
       _sunShowJulian = true;
       _profiles = TimerProfile.defaults;
       _activeProfileIndex = 1;
-      _developerFeaturesEnabled = false;
+      _advancedFeaturesEnabled = false;
       _currentIndex = 0;
     });
+  }
+
+  // ── Update hook ───────────────────────────────────────────────
+
+  /// Called once per app update (when the build number increases).
+  /// [prefs] is the already-resolved SharedPreferences instance.
+  Future<void> _onAppUpdated(SharedPreferences prefs) async {
+    debugPrint('App updated — running post-update actions.');
+    await _resetAllToDefaults();
   }
 
   // ── Burger menus ──────────────────────────────────────────────
@@ -307,11 +328,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (_) => SettingsScreen(
-                        developerFeaturesEnabled: _developerFeaturesEnabled,
-                        onDeveloperFeaturesChanged: (v) {
+                        advancedFeaturesEnabled: _advancedFeaturesEnabled,
+                        onAdvancedFeaturesChanged: (v) {
                           setState(() {
-                            _developerFeaturesEnabled = v;
-                            if (!v) _moonShowLunarAnchor = false;
+                            _advancedFeaturesEnabled = v;
+                            if (!v) {
+                              _moonShowLunarAnchor = false;
+                              _moonUseLocalTilt = false;
+                            }
                           });
                           _savePrefs();
                         },
@@ -347,7 +371,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) => _MoonMenuSheet(
-        developerFeaturesEnabled: _developerFeaturesEnabled,
+        advancedFeaturesEnabled: _advancedFeaturesEnabled,
         showTra: _moonShowTra,
         showLuach: _moonShowLuach,
         showLuachTraOverlap: _moonShowLuachTraOverlap,
@@ -477,20 +501,24 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             centerTitle: true,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: ((_currentIndex == 0 || _currentIndex == 1) && !_isLive)
+            leading: (_currentIndex == 0 || _currentIndex == 1)
                 ? IconButton(
-                    icon: const Icon(
-                      Icons.play_arrow_rounded,
-                      color: Colors.cyanAccent,
+                    icon: Icon(
+                      Icons.restore_rounded,
+                      color: _isLive
+                          ? Colors.white.withValues(alpha: 0.25)
+                          : null,
                       size: 28,
                     ),
-                    tooltip: 'Resume Live Time',
-                    onPressed: () {
-                      setState(() {
-                        _isLive = true;
-                        _globalMomentNotifier.value = DateTime.now();
-                      });
-                    },
+                    tooltip: _isLive ? 'Live' : 'Resume Live Time',
+                    onPressed: _isLive
+                        ? null
+                        : () {
+                            setState(() {
+                              _isLive = true;
+                              _globalMomentNotifier.value = DateTime.now();
+                            });
+                          },
                   )
                 : null,
             actions: [
@@ -549,7 +577,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 // ═════════════════════════════════════════════════════════════
 
 class _MoonMenuSheet extends StatefulWidget {
-  final bool developerFeaturesEnabled;
+  final bool advancedFeaturesEnabled;
   final bool showTra;
   final bool showLuach;
   final bool showLuachTraOverlap;
@@ -566,7 +594,7 @@ class _MoonMenuSheet extends StatefulWidget {
   onChanged;
 
   const _MoonMenuSheet({
-    required this.developerFeaturesEnabled,
+    required this.advancedFeaturesEnabled,
     required this.showTra,
     required this.showLuach,
     required this.showLuachTraOverlap,
@@ -645,19 +673,20 @@ class _MoonMenuSheetState extends State<_MoonMenuSheet> {
                 _emit();
               },
             ),
-            _ToggleRow(
-              label: 'Local Tilt',
-              subtitle: 'Moon tilts to reflect to your location',
-              icon: '📍',
-              iconColor: Colors.amberAccent,
-              value: _tilt,
-              enabled: widget.hasLocation,
-              onChanged: (v) {
-                setState(() => _tilt = v);
-                _emit();
-              },
-            ),
-            if (widget.developerFeaturesEnabled)
+            if (widget.advancedFeaturesEnabled)
+              _ToggleRow(
+                label: 'Local Tilt',
+                subtitle: 'Moon tilts to reflect to your location',
+                icon: '📍',
+                iconColor: Colors.amberAccent,
+                value: _tilt,
+                enabled: widget.hasLocation,
+                onChanged: (v) {
+                  setState(() => _tilt = v);
+                  _emit();
+                },
+              ),
+            if (widget.advancedFeaturesEnabled)
               _ToggleRow(
                 label: 'Lunar Anchors',
                 subtitle: 'Full & New lunar anchors',
