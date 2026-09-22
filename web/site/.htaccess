@@ -13,3 +13,9 @@
     ExpiresByType text/javascript "access plus 0 seconds"
 </IfModule>
 
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteRule ^/privacy.txt privacy.html [END,NE,R=permanent]
+  RewriteRule ^/copyright.txt copyright.html [END,NE,R=permanent]
+  RewriteRule ^/app https://time-app.veryeasy.co.za/ [END,NE,R=permanent]
+</IfModule>
