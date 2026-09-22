@@ -20,11 +20,7 @@ cp "$SD/web/flutter-index.html" "$SD/web/index.html"
 flutter build web --release --base-href "/"
 
 # Clean up temporary web/index.html
-if [ "$SITE_BAK" = true ]; then
-    mv "$SD/web/index.html.site_bak" "$SD/web/index.html"
-else
-    rm -f "$SD/web/index.html"
-fi
+rm -f "$SD/web/index.html"
 
 # Refresh web/app directory
 mkdir -p "$SD/web/app"

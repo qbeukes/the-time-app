@@ -495,7 +495,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           ),
         ];
 
-        return Scaffold(
+        Widget mainWidget = Scaffold(
           appBar: AppBar(
             title: Text(['Lunar Time', 'Solar Time', 'Seconds'][_currentIndex]),
             centerTitle: true,
@@ -567,6 +567,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             ],
           ),
         );
+
+        if (kIsWeb) {
+          mainWidget = Container(
+            color: const Color(0xFF050810),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 550),
+                child: mainWidget,
+              ),
+            ),
+          );
+        }
+
+        return mainWidget;
       },
     );
   }
